@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gallery — Blossom SMP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+    <div id="scroll-progress"></div>
+    <div id="ambient"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+    <div id="cursor-glow"></div>
+    <div id="petals"></div>
+
+    <nav>
+        <div class="wrap">
+            <div class="brand"><span class="dot"></span> Blossom SMP</div>
+            <div class="links">
+                <a href="index.html">Home</a>
+                <a href="rules.html">Rules</a>
+                <a href="gallery.html" class="active">Gallery</a>
+                <a href="changelog.html">Changelog</a>
+            </div>
+            <button class="nav-toggle" aria-label="Menu">☰</button>
+            <a class="nav-discord" href="https://discord.gg/Z3HkAgtzfa" target="_blank" rel="noopener">Discord</a>
+        </div>
+    </nav>
+
+    <header class="page-header">
+        <div class="wrap narrow">
+            <div class="eyebrow">Builder showcase</div>
+            <h1>Gallery</h1>
+            <p>Placeholder tiles below — drop in real screenshots from /mnt/user-data/uploads or your own renders and swap the src attributes.</p>
+        </div>
+    </header>
+
+    <section class="tight" id="gallery">
+        <div class="wrap">
+            <div class="gallery-grid" id="gallery-grid"></div>
+        </div>
+    </section>
+
+    <footer>
+        <div>Blossom SMP — Java 108.181.119.197:50002 · Bedrock 108.181.119.197:50018</div>
+        <div class="footer-links">
+            <a href="rules.html">Rules</a>
+            <a href="gallery.html">Gallery</a>
+            <a href="changelog.html">Changelog</a>
+            <a href="https://discord.gg/Z3HkAgtzfa" target="_blank">Discord</a>
+            <a href="admin.html">Staff Login</a>
+        </div>
+    </footer>
+
+    <script src="assets/js/main.js"></script>
+    <script>
+        // Placeholder gallery tiles (gradient SVGs) — swap with real screenshots later.
+        const tiles = [
+            { cap: 'Spawn — cherry blossom plaza', h: 360, c1: '#f3b6cb', c2: '#3a2f28' },
+            { cap: 'Tideforge\'s ocean base', h: 260, c1: '#8aa07d', c2: '#221b16' },
+            { cap: 'Community farm district', h: 320, c1: '#e587a8', c2: '#1b1612' },
+            { cap: 'Hazelune\'s treehouse', h: 300, c1: '#e8c987', c2: '#261f1a' },
+            { cap: 'Nether hub', h: 240, c1: '#b5645a', c2: '#1b1612' },
+            { cap: 'Mossgrove village build', h: 340, c1: '#8aa07d', c2: '#2c241d' },
+            { cap: 'End city outpost', h: 280, c1: '#c6a8e8', c2: '#1b1612' },
+            { cap: 'Wrenfall\'s mountain hall', h: 310, c1: '#d4b8a7', c2: '#221b16' },
+            { cap: 'Blossom Plaza at night', h: 250, c1: '#f3b6cb', c2: '#1b1612' },
+        ];
+        const grid = document.getElementById('gallery-grid');
+        tiles.forEach((t, i) => {
+            const div = document.createElement('div');
+            div.className = 'gallery-item';
+            div.style.animationDelay = (i * 0.06) + 's';
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="${t.h}" viewBox="0 0 400 ${t.h}">
+                <defs><linearGradient id="g${i}" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="${t.c1}" stop-opacity="0.55"/>
+                    <stop offset="100%" stop-color="${t.c2}"/>
+                </linearGradient></defs>
+                <rect width="400" height="${t.h}" fill="url(#g${i})"/>
+            </svg>`;
+            div.innerHTML = `<img src="data:image/svg+xml;utf8,${encodeURIComponent(svg)}" alt="${t.cap}" /><div class="gallery-cap">${t.cap}</div>`;
+            grid.appendChild(div);
+        });
+    </script>
+</body>
+</html>

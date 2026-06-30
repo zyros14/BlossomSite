@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blossom SMP — A calm survival world</title>
+    <meta name="description" content="Blossom SMP is a chill, pay-to-win-free Minecraft survival server with Waystones, proximity chat, and land claims." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+
+    <div id="scroll-progress"></div>
+    <div id="ambient"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+    <div id="cursor-glow"></div>
+    <div id="petals"></div>
+
+    <nav>
+        <div class="wrap">
+            <div class="brand"><span class="dot"></span> Blossom SMP</div>
+            <div class="links">
+                <a href="index.html" class="active">Home</a>
+                <a href="rules.html">Rules</a>
+                <a href="changelog.html">Changelog</a>
+            </div>
+            <button class="nav-toggle" aria-label="Menu">☰</button>
+            <a class="nav-discord" href="https://discord.gg/Z3HkAgtzfa" target="_blank" rel="noopener">Discord</a>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="wrap">
+            <div class="eyebrow" id="heroEyebrow">Java &amp; Bedrock · 1.21.11</div>
+            <h1 class="title">
+                <span class="line"><span id="heroLine1">A slower kind of</span></span>
+                <span class="line"><span><em id="heroLine2">survival.</em></span></span>
+            </h1>
+            <p class="subtitle" id="heroSubtitle">Blossom SMP is a chill, community-built survival world — no pay-to-win, no crates, just a calm cherry-blossom map and a friendly playerbase.</p>
+
+            <div class="ip-cluster">
+                <div class="ip-box" id="java-box">
+                    <div>
+                        <div class="label">Java Edition</div>
+                        <div class="value">108.181.119.197:50002</div>
+                    </div>
+                    <button onclick="copyIP('108.181.119.197:50002', 'java-box')">Copy</button>
+                </div>
+                <div class="ip-box" id="bedrock-box">
+                    <div>
+                        <div class="label">Bedrock Edition</div>
+                        <div class="value">108.181.119.197 · Port 50018</div>
+                    </div>
+                    <button onclick="copyIP('108.181.119.197', 'bedrock-box')">Copy</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="about" id="about">
+        <div class="wrap">
+            <p id="aboutP1">Blossom SMP is a chill Minecraft survival server built for players who want a relaxed, community-focused experience without pay-to-win systems or overcomplicated mechanics. Set in a calm, cherry-blossom-inspired world, the server is designed around <strong>simple survival gameplay</strong> enhanced with quality-of-life features like Waystones, proximity voice chat, and land claims to keep things fair and fun.</p>
+            <p id="aboutP2">Whether you're building, exploring, or just hanging out with friends, Blossom SMP focuses on creativity, community, and a laid-back atmosphere where everyone can play at their own pace. No crates, no unfair advantages — just pure survival with a friendly playerbase.</p>
+        </div>
+    </section>
+
+    <section id="features">
+        <div class="wrap">
+            <div class="section-head">
+                <h2>What's on the server</h2>
+                <p>Just enough quality-of-life to keep survival fair, never enough to break it.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature"><div class="glyph"></div><h3>Waystones</h3><p>Fast travel between your bases without breaking immersion or grinding rails.</p></div>
+                <div class="feature"><div class="glyph"></div><h3>Proximity Voice Chat</h3><p>Talk to nearby players naturally — no need to set up a separate call.</p></div>
+                <div class="feature"><div class="glyph"></div><h3>Land Claims</h3><p>Protect your builds from griefing while keeping the world open and shared.</p></div>
+                <div class="feature"><div class="glyph"></div><h3>No Pay-to-Win</h3><p>No crates, no purchasable advantages. Everyone plays on the same footing.</p></div>
+                <div class="feature"><div class="glyph"></div><h3>Vanilla-Friendly</h3><p>Survival stays simple and recognizable — additions support the game, not replace it.</p></div>
+                <div class="feature"><div class="glyph"></div><h3>Java + Bedrock</h3><p>Cross-play supported, so it doesn't matter which edition you're on.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="status">
+        <div class="wrap">
+            <div class="section-head">
+                <h2>Server Status</h2>
+                <p>Live data pulled directly from the server — always up to date.</p>
+            </div>
+            <div class="status-card" id="status-card">
+                <div class="status-row">
+                    <div class="status-dot">
+                        <span class="dot checking" id="statusDot"></span>
+                        <span class="status-text" id="statusText">Checking...</span>
+                    </div>
+                    <div class="status-badge checking" id="statusBadge">
+                        <span class="status-badge-icon">🌸</span>
+                        <span id="statusBadgeText">Checking the breeze...</span>
+                    </div>
+                </div>
+                <div class="motd" id="motdDisplay">Fetching server info...</div>
+                <button class="status-refresh" onclick="fetchServerStatus()">⟳ Refresh</button>
+            </div>
+            <div class="stats-bar">
+                <div class="stat-item"><div class="num">24/7</div><div class="desc">Uptime</div></div>
+                <div class="stat-item"><div class="num">1.21</div><div class="desc">Version</div></div>
+                <div class="stat-item"><div class="num">⚡</div><div class="desc">Crossplay</div></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta" id="join">
+        <div class="wrap">
+            <h2>Come hang out</h2>
+            <p>Join the Discord for updates, support, and to meet the community before you log on.</p>
+            <a class="discord-btn" href="https://discord.gg/Z3HkAgtzfa" target="_blank" rel="noopener">Join the Discord →</a>
+        </div>
+    </section>
+
+    <footer>
+        <div>Blossom SMP — Java 108.181.119.197:50002 · Bedrock 108.181.119.197:50018</div>
+        <div class="footer-links">
+            <a href="rules.html">Rules</a>
+            <a href="changelog.html">Changelog</a>
+            <a href="https://discord.gg/Z3HkAgtzfa" target="_blank">Discord</a>
+            <a href="admin.html">Staff Login</a>
+        </div>
+    </footer>
+
+    <script src="assets/js/main.js"></script>
+    <script>
+        applyContentOverrides();
+    </script>
+</body>
+</html>

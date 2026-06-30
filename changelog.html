@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Changelog — Blossom SMP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+    <div id="scroll-progress"></div>
+    <div id="ambient"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+    <div id="cursor-glow"></div>
+    <div id="petals"></div>
+
+    <nav>
+        <div class="wrap">
+            <div class="brand"><span class="dot"></span> Blossom SMP</div>
+            <div class="links">
+                <a href="index.html">Home</a>
+                <a href="rules.html">Rules</a>
+                <a href="changelog.html" class="active">Changelog</a>
+            </div>
+            <button class="nav-toggle" aria-label="Menu">☰</button>
+            <a class="nav-discord" href="https://discord.gg/Z3HkAgtzfa" target="_blank" rel="noopener">Discord</a>
+        </div>
+    </nav>
+
+    <header class="page-header">
+        <div class="wrap narrow">
+            <div class="eyebrow">Patch notes</div>
+            <h1>Changelog</h1>
+            <p>What's changed on Blossom SMP recently.</p>
+        </div>
+    </header>
+
+    <section class="tight" id="changelog">
+        <div class="wrap narrow">
+            <div class="timeline" id="changelog-timeline"></div>
+        </div>
+    </section>
+
+    <footer>
+        <div>Blossom SMP — Java 108.181.119.197:50002 · Bedrock 108.181.119.197:50018</div>
+        <div class="footer-links">
+            <a href="rules.html">Rules</a>
+            <a href="changelog.html">Changelog</a>
+            <a href="https://discord.gg/Z3HkAgtzfa" target="_blank">Discord</a>
+            <a href="admin.html">Staff Login</a>
+        </div>
+    </footer>
+
+    <script src="assets/js/main.js"></script>
+    <script>
+        renderChangelog('changelog-timeline');
+    </script>
+</body>
+</html>

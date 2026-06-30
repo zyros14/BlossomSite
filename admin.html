@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Staff Admin — Blossom SMP</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <style>
+        /* admin-only styles */
+        .admin-shell { display: none; }
+        .admin-shell.visible { display: block; }
+        .login-shell { min-height: 70vh; display: flex; align-items: center; justify-content: center; padding: 60px 28px; }
+        .login-card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 40px; max-width: 380px; width: 100%; box-shadow: var(--shadow); text-align: center; }
+        .login-card h1 { font-size: 1.6rem; margin-bottom: 8px; }
+        .login-card p { color: var(--ink-dim); font-size: 0.88rem; margin-bottom: 24px; }
+        .login-card input { width: 100%; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; color: var(--ink); font-size: 0.95rem; margin-bottom: 14px; }
+        .login-card input:focus { outline: none; border-color: var(--blossom-deep); }
+        .login-card button { width: 100%; background: var(--blossom); color: #2a1a20; font-weight: 600; border: none; padding: 13px; border-radius: 999px; cursor: pointer; transition: all .2s; }
+        .login-card button:hover { background: var(--blossom-deep); transform: translateY(-1px); }
+        .login-error { color: #eb5757; font-size: 0.82rem; margin-top: 12px; min-height: 18px; }
+
+        .admin-bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; padding: 80px 0 30px; }
+        .admin-bar h1 { font-size: 2rem; }
+        .admin-bar .sub { color: var(--ink-dim); font-size: 0.85rem; margin-top: 4px; }
+        .logout-btn { border: 1px solid var(--line); padding: 9px 18px; border-radius: 999px; font-size: 0.82rem; cursor: pointer; background: transparent; color: var(--ink-dim); transition: all .2s; }
+        .logout-btn:hover { border-color: #eb5757; color: #eb5757; }
+
+        .admin-tabs { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
+        .admin-tab { background: var(--panel); border: 1px solid var(--line); padding: 9px 20px; border-radius: 999px; font-size: 0.85rem; cursor: pointer; color: var(--ink-dim); transition: all .2s; }
+        .admin-tab.active, .admin-tab:hover { color: var(--ink); border-color: var(--blossom-deep); background: rgba(243,182,203,0.07); }
+        .admin-panel { display: none; }
+        .admin-panel.active { display: block; }
+
+        .admin-card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 30px 32px; margin-bottom: 24px; }
+        .admin-card h2 { font-size: 1.15rem; margin-bottom: 6px; }
+        .admin-card .hint { color: var(--ink-dim); font-size: 0.82rem; margin-bottom: 20px; }
+        .field-row { margin-bottom: 18px; }
+        .field-row label { font-size: 0.8rem; color: var(--ink-dim); display: block; margin-bottom: 6px; }
+        .field-row input, .field-row textarea {
+            width: 100%; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 11px 14px;
+            color: var(--ink); font-family: 'Inter', sans-serif; font-size: 0.92rem; transition: border-color .2s, box-shadow .2s;
+        }
+        .field-row input:focus, .field-row textarea:focus { outline: none; border-color: var(--blossom-deep); box-shadow: 0 0 0 3px rgba(243,182,203,0.12); }
+        .field-row textarea { min-height: 90px; resize: vertical; }
+
+        .save-btn { background: var(--blossom); color: #2a1a20; font-weight: 600; border: none; padding: 12px 26px; border-radius: 999px; cursor: pointer; transition: all .2s; font-size: 0.9rem; }
+        .save-btn:hover { background: var(--blossom-deep); transform: translateY(-2px); }
+        .save-status { font-size: 0.82rem; color: var(--moss); margin-left: 14px; opacity: 0; transition: opacity .3s; }
+        .save-status.show { opacity: 1; }
+
+        .cl-entry { border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; margin-bottom: 14px; background: var(--bg); position: relative; }
+        .cl-entry .cl-grid { display: grid; grid-template-columns: 160px 1fr; gap: 12px; margin-bottom: 12px; }
+        .cl-entry textarea { grid-column: 1 / -1; }
+        .cl-actions { display: flex; gap: 10px; justify-content: flex-end; }
+        .cl-remove { background: transparent; border: 1px solid var(--line); color: var(--ink-dim); padding: 6px 14px; border-radius: 8px; font-size: 0.78rem; cursor: pointer; transition: all .2s; }
+        .cl-remove:hover { border-color: #eb5757; color: #eb5757; }
+        .cl-move { background: transparent; border: 1px solid var(--line); color: var(--ink-dim); padding: 6px 10px; border-radius: 8px; font-size: 0.78rem; cursor: pointer; transition: all .2s; }
+        .cl-move:hover { border-color: var(--blossom-deep); color: var(--blossom); }
+        .add-entry-btn { display: inline-flex; align-items: center; gap: 8px; border: 1px dashed var(--line); padding: 12px 22px; border-radius: 10px; color: var(--ink-dim); cursor: pointer; background: transparent; transition: all .2s; width: 100%; justify-content: center; font-size: 0.88rem; }
+        .add-entry-btn:hover { border-color: var(--blossom-deep); color: var(--blossom); }
+
+        .danger-zone { border: 1px solid #6b3030; }
+        .danger-zone h2 { color: #eb5757; }
+        .danger-btn { background: transparent; border: 1px solid #6b3030; color: #eb5757; padding: 10px 22px; border-radius: 999px; cursor: pointer; font-size: 0.85rem; transition: all .2s; }
+        .danger-btn:hover { background: #eb5757; color: #1b1612; }
+
+        @media (max-width: 640px) { .cl-entry .cl-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div id="scroll-progress"></div>
+    <div id="ambient"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+    <div id="petals"></div>
+
+    <nav>
+        <div class="wrap">
+            <div class="brand"><span class="dot"></span> Blossom SMP <span style="color:var(--ink-dim);font-size:.75rem;font-family:'Inter',sans-serif;">/ admin</span></div>
+            <div class="links"><a href="index.html">← Back to site</a></div>
+        </div>
+    </nav>
+
+    <!-- ===== LOGIN ===== -->
+    <div class="login-shell" id="login-shell">
+        <div class="login-card">
+            <h1>Staff Login</h1>
+            <p>Enter the admin password to edit site content and the changelog.</p>
+            <input type="password" id="pw-input" placeholder="Password" onkeydown="if(event.key==='Enter')tryLogin()" />
+            <button onclick="tryLogin()">Log In</button>
+            <div class="login-error" id="login-error"></div>
+            <p style="font-size:.72rem;color:var(--ink-dim);margin-top:18px;">Default password is <code>blossom123</code> — change it from inside the panel after logging in. This is client-side only (stored in this browser); it's a convenience lock, not real security.</p>
+        </div>
+    </div>
+
+    <!-- ===== ADMIN SHELL ===== -->
+    <div class="admin-shell" id="admin-shell">
+        <div class="wrap narrow">
+            <div class="admin-bar">
+                <div>
+                    <h1>Site Admin</h1>
+                    <div class="sub">Edits save to this browser only (localStorage). Open the live site here to preview them.</div>
+                </div>
+                <button class="logout-btn" onclick="logout()">Log out</button>
+            </div>
+
+            <div class="admin-tabs">
+                <button class="admin-tab active" data-panel="content-panel">Site Content</button>
+                <button class="admin-tab" data-panel="changelog-panel">Changelog</button>
+                <button class="admin-tab" data-panel="settings-panel">Settings</button>
+            </div>
+
+            <!-- CONTENT PANEL -->
+            <div class="admin-panel active" id="content-panel">
+                <div class="admin-card">
+                    <h2>Hero Section</h2>
+                    <div class="hint">Shows at the top of the homepage.</div>
+                    <div class="field-row"><label>Eyebrow text</label><input id="f-heroEyebrow" /></div>
+                    <div class="field-row"><label>Title — line 1</label><input id="f-heroLine1" /></div>
+                    <div class="field-row"><label>Title — line 2 (italic, gradient)</label><input id="f-heroLine2" /></div>
+                    <div class="field-row"><label>Subtitle</label><textarea id="f-heroSubtitle"></textarea></div>
+                </div>
+                <div class="admin-card">
+                    <h2>About Section</h2>
+                    <div class="hint">The two paragraphs under "What's on the server."</div>
+                    <div class="field-row"><label>Paragraph 1</label><textarea id="f-aboutP1"></textarea></div>
+                    <div class="field-row"><label>Paragraph 2</label><textarea id="f-aboutP2"></textarea></div>
+                </div>
+                <button class="save-btn" onclick="saveContentForm()">Save Content</button>
+                <span class="save-status" id="content-save-status">✓ Saved</span>
+            </div>
+
+            <!-- CHANGELOG PANEL -->
+            <div class="admin-panel" id="changelog-panel">
+                <div class="admin-card">
+                    <h2>Changelog Entries</h2>
+                    <div class="hint">Top entry shows first on the changelog page. Use the arrows to reorder.</div>
+                    <div id="cl-list"></div>
+                    <button class="add-entry-btn" onclick="addChangelogEntry()">+ Add new entry</button>
+                </div>
+                <button class="save-btn" onclick="saveChangelogForm()">Save Changelog</button>
+                <span class="save-status" id="changelog-save-status">✓ Saved</span>
+            </div>
+
+            <!-- SETTINGS PANEL -->
+            <div class="admin-panel" id="settings-panel">
+                <div class="admin-card">
+                    <h2>Change Password</h2>
+                    <div class="hint">Stored locally in this browser only.</div>
+                    <div class="field-row"><label>New password</label><input id="f-newpw" type="password" /></div>
+                    <button class="save-btn" onclick="changePassword()">Update Password</button>
+                    <span class="save-status" id="pw-save-status">✓ Saved</span>
+                </div>
+                <div class="admin-card danger-zone">
+                    <h2>Reset to Defaults</h2>
+                    <div class="hint">Clears all saved content + changelog edits in this browser and restores the originals.</div>
+                    <button class="danger-btn" onclick="resetAll()">Reset Everything</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div>Blossom SMP — Admin Panel</div>
+    </footer>
+
+    <script src="assets/js/main.js"></script>
+    <script>
+        const PW_KEY = 'blossom_admin_pw';
+        const SESSION_KEY = 'blossom_admin_session';
+
+        function getPw() { return localStorage.getItem(PW_KEY) || 'blossom123'; }
+
+        function tryLogin() {
+            const input = document.getElementById('pw-input');
+            const err = document.getElementById('login-error');
+            if (input.value === getPw()) {
+                sessionStorage.setItem(SESSION_KEY, '1');
+                showAdmin();
+            } else {
+                err.textContent = 'Incorrect password.';
+                input.value = '';
+                input.focus();
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem(SESSION_KEY);
+            document.getElementById('admin-shell').classList.remove('visible');
+            document.getElementById('login-shell').style.display = 'flex';
+        }
+
+        function showAdmin() {
+            document.getElementById('login-shell').style.display = 'none';
+            document.getElementById('admin-shell').classList.add('visible');
+            loadContentForm();
+            loadChangelogForm();
+        }
+
+        // ----- tabs -----
+        document.querySelectorAll('.admin-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.panel).classList.add('active');
+            });
+        });
+
+        // ----- content form -----
+        function loadContentForm() {
+            const c = getContent();
+            document.getElementById('f-heroEyebrow').value = c.heroEyebrow;
+            document.getElementById('f-heroLine1').value = c.heroLine1;
+            document.getElementById('f-heroLine2').value = c.heroLine2;
+            document.getElementById('f-heroSubtitle').value = c.heroSubtitle;
+            document.getElementById('f-aboutP1').value = c.aboutP1;
+            document.getElementById('f-aboutP2').value = c.aboutP2;
+        }
+
+        function saveContentForm() {
+            const c = {
+                heroEyebrow: document.getElementById('f-heroEyebrow').value,
+                heroLine1: document.getElementById('f-heroLine1').value,
+                heroLine2: document.getElementById('f-heroLine2').value,
+                heroSubtitle: document.getElementById('f-heroSubtitle').value,
+                aboutP1: document.getElementById('f-aboutP1').value,
+                aboutP2: document.getElementById('f-aboutP2').value
+            };
+            saveContent(c);
+            flashStatus('content-save-status');
+        }
+
+        // ----- changelog form -----
+        let clEntries = [];
+
+        function loadChangelogForm() {
+            clEntries = getChangelog();
+            renderClList();
+        }
+
+        function renderClList() {
+            const list = document.getElementById('cl-list');
+            list.innerHTML = clEntries.map((e, i) => `
+                <div class="cl-entry" data-i="${i}">
+                    <div class="cl-grid">
+                        <input value="${escapeAttr(e.date)}" placeholder="Date (e.g. June 2026)" oninput="clEntries[${i}].date=this.value" />
+                        <input value="${escapeAttr(e.title)}" placeholder="Title" oninput="clEntries[${i}].title=this.value" />
+                        <textarea placeholder="Description" oninput="clEntries[${i}].body=this.value">${escapeHtml(e.body)}</textarea>
+                    </div>
+                    <div class="cl-actions">
+                        <button class="cl-move" onclick="moveEntry(${i},-1)">↑</button>
+                        <button class="cl-move" onclick="moveEntry(${i},1)">↓</button>
+                        <button class="cl-remove" onclick="removeEntry(${i})">Remove</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addChangelogEntry() {
+            clEntries.unshift({ date: 'Month Year', title: 'New update', body: 'Describe what changed...' });
+            renderClList();
+        }
+
+        function removeEntry(i) {
+            clEntries.splice(i, 1);
+            renderClList();
+        }
+
+        function moveEntry(i, dir) {
+            const j = i + dir;
+            if (j < 0 || j >= clEntries.length) return;
+            [clEntries[i], clEntries[j]] = [clEntries[j], clEntries[i]];
+            renderClList();
+        }
+
+        function saveChangelogForm() {
+            saveChangelog(clEntries);
+            flashStatus('changelog-save-status');
+        }
+
+        // ----- settings -----
+        function changePassword() {
+            const val = document.getElementById('f-newpw').value.trim();
+            if (!val) return;
+            localStorage.setItem(PW_KEY, val);
+            document.getElementById('f-newpw').value = '';
+            flashStatus('pw-save-status');
+        }
+
+        function resetAll() {
+            if (!confirm('Reset all content and changelog edits to defaults? This cannot be undone.')) return;
+            localStorage.removeItem(BLOSSOM_CONTENT_KEY);
+            localStorage.removeItem(BLOSSOM_CHANGELOG_KEY);
+            loadContentForm();
+            loadChangelogForm();
+        }
+
+        // ----- helpers -----
+        function flashStatus(id) {
+            const el = document.getElementById(id);
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 1800);
+        }
+        function escapeAttr(str) {
+            return (str ?? '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+        }
+
+        // ----- boot -----
+        if (sessionStorage.getItem(SESSION_KEY) === '1') showAdmin();
+    </script>
+</body>
+</html>
