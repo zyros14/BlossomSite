@@ -1,4 +1,11 @@
-import { createHmac, timingSafeEqual } from 'node:crypto';
+async function sign(data, secret) {
+  const enc = new TextEncoder();
+  const keyData = enc.encode(secret);
+  const messageData = enc.encode(data);
+  const cryptoKey = await crypto.subtle.importKey('raw', keyData, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const signature = await crypto.subtle.sign('HMAC', cryptoKey, messageData);
+  return Array.from(new Uint8Array(signature)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
 
 function getConfig(env, request) {
   return {
@@ -6,7 +13,7 @@ function getConfig(env, request) {
   };
 }
 
-function verifySessionCookie(cookieHeader, secret) {
+async function verifySessionCookie(cookieHeader, secret) {
   if (!cookieHeader) return null;
   const cookies = cookieHeader.split(';').map(c => c.trim());
   const sessionCookie = cookies.find(c => c.startsWith('session='));
@@ -14,14 +21,14 @@ function verifySessionCookie(cookieHeader, secret) {
   const value = decodeURIComponent(sessionCookie.slice('session='.length));
   const [payload, sig] = value.split('.');
   if (!payload || !sig) return null;
-  const expected = createHmac('sha256', secret).update(payload).digest('hex');
-  if (!timingSafeEqual(Buffer.from(expected), Buffer.from(sig))) return null;
+  const expected = await sign(payload, secret);
+  if (expected !== sig) return null;
   return payload;
 }
 
 export async function onRequest({ request, env }) {
   const config = getConfig(env, request);
-  const payload = verifySessionCookie(request.headers.get('cookie'), config.sessionSecret);
+  const payload = await verifySessionCookie(request.headers.get('cookie'), config.sessionSecret);
   if (!payload) {
     return Response.json({ ok: false });
   }

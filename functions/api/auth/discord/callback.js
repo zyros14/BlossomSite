@@ -1,4 +1,11 @@
-import { createHmac, timingSafeEqual } from 'node:crypto';
+async function sign(data, secret) {
+  const enc = new TextEncoder();
+  const keyData = enc.encode(secret);
+  const messageData = enc.encode(data);
+  const cryptoKey = await crypto.subtle.importKey('raw', keyData, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const signature = await crypto.subtle.sign('HMAC', cryptoKey, messageData);
+  return Array.from(new Uint8Array(signature)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
 
 function getConfig(env, request) {
   const origin = new URL(request.url).origin;
@@ -19,9 +26,9 @@ function sign(data, secret) {
   return createHmac('sha256', secret).update(data).digest('hex');
 }
 
-function createSessionCookie(userId, username, secret) {
+async function createSessionCookie(userId, username, secret) {
   const payload = `${userId}:${username}:${Date.now()}`;
-  const sig = sign(payload, secret);
+  const sig = await sign(payload, secret);
   return `session=${encodeURIComponent(`${payload}.${sig}`)}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=3600`;
 }
 
@@ -68,7 +75,7 @@ export async function onRequestGet(context) {
   }
 
   const headers = new Headers();
-  headers.set('Set-Cookie', createSessionCookie(userData.id, userData.username, config.sessionSecret));
+  headers.set('Set-Cookie', await createSessionCookie(userData.id, userData.username, config.sessionSecret));
   headers.set('Location', '/admin.html');
   return new Response(null, { status: 302, headers });
 }
