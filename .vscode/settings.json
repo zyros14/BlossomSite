@@ -6,5 +6,9 @@
         "Test-Path": true,
         "Add-Content": true,
         "Set-Content": true
+    },
+    "files.exclude": {
+        "**/node_modules": true,
+        "**/.wrangler": true
     }
 }
