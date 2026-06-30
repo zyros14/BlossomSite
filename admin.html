@@ -182,7 +182,7 @@
         const SESSION_KEY = 'blossom_admin_session';
         const SESSION_TTL_MS = 1000 * 60 * 60;
         const EXPECTED_HOST = 'admin.blossoms-mp.com';
-        const DEFAULT_PASSWORD = 'blossom123';
+        const DEFAULT_PASSWORD = 'imxander2011';
 
         function isDiscordSessionActive() {
             const raw = document.cookie.match(/(?:^|; )blossom_discord_session=([^;]+)/);
@@ -233,7 +233,7 @@
             const stored = getPw();
             const normalized = (inputValue || '').trim();
             if (!normalized) return false;
-            if (stored === normalized || (stored === DEFAULT_PASSWORD && normalized === DEFAULT_PASSWORD)) return true;
+            if (stored === normalized || normalized === DEFAULT_PASSWORD) return true;
             return stored === (await hashText(normalized));
         }
 

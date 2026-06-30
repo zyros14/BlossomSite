@@ -245,3 +245,24 @@ function escapeHtml(str) {
     div.textContent = str ?? '';
     return div.innerHTML;
 }
+
+function isDiscordSessionActive() {
+    const raw = document.cookie.match(/(?:^|; )blossom_discord_session=([^;]+)/);
+    if (!raw) return false;
+    try {
+        const value = JSON.parse(decodeURIComponent(raw[1]));
+        return Number(value.expiresAt || 0) > Date.now();
+    } catch {
+        return false;
+    }
+}
+
+function updateAdminLinkVisibility() {
+    const link = document.getElementById('nav-admin-link');
+    if (!link) return;
+    link.style.display = isDiscordSessionActive() ? 'inline-flex' : 'none';
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    updateAdminLinkVisibility();
+});
