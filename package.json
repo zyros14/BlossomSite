@@ -1,4 +1,8 @@
 {
   "name": "blossom-smp-site",
-  "type": "module"
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "deploy": "wrangler pages deploy ."
+  }
 }
