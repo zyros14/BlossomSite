@@ -87,12 +87,11 @@
     <div class="login-shell" id="login-shell">
         <div class="login-card">
             <h1>Staff Login</h1>
-            <p>Use Discord to verify your admin access, then optionally enter your private passphrase.</p>
-            <button onclick="window.location.href='/api/auth/discord/login'" style="margin-bottom:12px;">Log in with Discord</button>
-            <input type="password" id="pw-input" placeholder="Optional passphrase" onkeydown="if(event.key==='Enter')tryLogin()" />
-            <button onclick="tryLogin()">Continue with passphrase</button>
+            <p>Enter the staff password to edit site content and the changelog.</p>
+            <input type="password" id="pw-input" placeholder="Password" onkeydown="if(event.key==='Enter')tryLogin()" />
+            <button onclick="tryLogin()">Log In</button>
             <div class="login-error" id="login-error"></div>
-            <p style="font-size:.72rem;color:var(--ink-dim);margin-top:18px;">This panel is intended for <strong>admin.blossoms-mp.com</strong>. Use the subdomain for the best experience. Discord verification is enforced server-side once configured.</p>
+            <p style="font-size:.72rem;color:var(--ink-dim);margin-top:18px;">This panel is intended for <strong>admin.blossoms-mp.com</strong>. Use the subdomain for the best experience. The password is stored locally in this browser only.</p>
         </div>
     </div>
 
@@ -224,21 +223,6 @@
             if (!normalized) return false;
             if (stored === normalized || (stored === DEFAULT_PASSWORD && normalized === DEFAULT_PASSWORD)) return true;
             return stored === (await hashText(normalized));
-        }
-
-        async function checkDiscordSession() {
-            try {
-                const res = await fetch('/api/auth/discord/me');
-                const data = await res.json();
-                if (data && data.ok) {
-                    setSession();
-                    showAdmin();
-                    return true;
-                }
-            } catch (error) {
-                console.warn('Discord session check failed', error);
-            }
-            return false;
         }
 
         function setSession() {
@@ -408,14 +392,11 @@
         }
 
 // ----- boot -----
-        document.addEventListener('DOMContentLoaded', async () => {
+        document.addEventListener('DOMContentLoaded', () => {
             if (sessionStorage.getItem(SESSION_KEY) === '1') {
                 setSession();
             }
-            const discordReady = await checkDiscordSession();
-            if (!discordReady) {
-                showAdmin();
-            }
+            showAdmin();
         });
     </script>
 </body>
