@@ -157,7 +157,12 @@ const defaultContent = {
     heroLine2: 'survival.',
     heroSubtitle: 'Blossom SMP is a chill, community-built survival world — no pay-to-win, no crates, just a calm cherry-blossom map and a friendly playerbase.',
     aboutP1: 'Blossom SMP is a chill Minecraft survival server built for players who want a relaxed, community-focused experience without pay-to-win systems or overcomplicated mechanics. Set in a calm, cherry-blossom-inspired world, the server is designed around simple survival gameplay enhanced with quality-of-life features like Waystones, proximity voice chat, and land claims to keep things fair and fun.',
-    aboutP2: "Whether you're building, exploring, or just hanging out with friends, Blossom SMP focuses on creativity, community, and a laid-back atmosphere where everyone can play at their own pace. No crates, no unfair advantages — just pure survival with a friendly playerbase."
+    aboutP2: "Whether you're building, exploring, or just hanging out with friends, Blossom SMP focuses on creativity, community, and a laid-back atmosphere where everyone can play at their own pace. No crates, no unfair advantages — just pure survival with a friendly playerbase.",
+    statusTitle: 'Server Status',
+    statusSubtitle: 'Live data pulled directly from the server — always up to date.',
+    ctaTitle: 'Come hang out',
+    ctaText: 'Join the Discord for updates, support, and to meet the community before you log on.',
+    ctaButton: 'Join the Discord →'
 };
 
 const defaultChangelog = [
@@ -201,7 +206,12 @@ function applyContentOverrides() {
         heroLine2: 'heroLine2',
         heroSubtitle: 'heroSubtitle',
         aboutP1: 'aboutP1',
-        aboutP2: 'aboutP2'
+        aboutP2: 'aboutP2',
+        statusTitle: 'statusTitle',
+        statusSubtitle: 'statusSubtitle',
+        ctaTitle: 'ctaTitle',
+        ctaText: 'ctaText',
+        ctaButton: 'ctaButton'
     };
     Object.entries(map).forEach(([key, id]) => {
         const el = document.getElementById(id);

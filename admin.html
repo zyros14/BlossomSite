@@ -87,11 +87,12 @@
     <div class="login-shell" id="login-shell">
         <div class="login-card">
             <h1>Staff Login</h1>
-            <p>Enter the admin password to edit site content and the changelog.</p>
-            <input type="password" id="pw-input" placeholder="Password" onkeydown="if(event.key==='Enter')tryLogin()" />
-            <button onclick="tryLogin()">Log In</button>
+            <p>Use Discord to verify your admin access, then optionally enter your private passphrase.</p>
+            <button onclick="window.location.href='/api/auth/discord/login'" style="margin-bottom:12px;">Log in with Discord</button>
+            <input type="password" id="pw-input" placeholder="Optional passphrase" onkeydown="if(event.key==='Enter')tryLogin()" />
+            <button onclick="tryLogin()">Continue with passphrase</button>
             <div class="login-error" id="login-error"></div>
-            <p style="font-size:.72rem;color:var(--ink-dim);margin-top:18px;">Default password is <code>blossom123</code> — change it from inside the panel after logging in. This is client-side only (stored in this browser); it's a convenience lock, not real security.</p>
+            <p style="font-size:.72rem;color:var(--ink-dim);margin-top:18px;">This panel is intended for <strong>admin.blossoms-mp.com</strong>. Use the subdomain for the best experience. Discord verification is enforced server-side once configured.</p>
         </div>
     </div>
 
@@ -127,6 +128,15 @@
                     <div class="hint">The two paragraphs under "What's on the server."</div>
                     <div class="field-row"><label>Paragraph 1</label><textarea id="f-aboutP1"></textarea></div>
                     <div class="field-row"><label>Paragraph 2</label><textarea id="f-aboutP2"></textarea></div>
+                </div>
+                <div class="admin-card">
+                    <h2>Status + CTA</h2>
+                    <div class="hint">Customizes the live status block and the primary Discord call-to-action.</div>
+                    <div class="field-row"><label>Status heading</label><input id="f-statusTitle" /></div>
+                    <div class="field-row"><label>Status description</label><textarea id="f-statusSubtitle"></textarea></div>
+                    <div class="field-row"><label>CTA heading</label><input id="f-ctaTitle" /></div>
+                    <div class="field-row"><label>CTA description</label><textarea id="f-ctaText"></textarea></div>
+                    <div class="field-row"><label>CTA button label</label><input id="f-ctaButton" /></div>
                 </div>
                 <button class="save-btn" onclick="saveContentForm()">Save Content</button>
                 <span class="save-status" id="content-save-status">✓ Saved</span>
@@ -170,14 +180,80 @@
     <script>
         const PW_KEY = 'blossom_admin_pw';
         const SESSION_KEY = 'blossom_admin_session';
+        const SESSION_TTL_MS = 1000 * 60 * 60;
+        const EXPECTED_HOST = 'admin.blossoms-mp.com';
+        const DEFAULT_PASSWORD = 'blossom123';
 
-        function getPw() { return localStorage.getItem(PW_KEY) || 'blossom123'; }
+        function getPw() {
+            const stored = localStorage.getItem(PW_KEY);
+            return stored || DEFAULT_PASSWORD;
+        }
 
-        function tryLogin() {
+        function getSessionExpiry() {
+            const raw = sessionStorage.getItem(SESSION_KEY);
+            if (!raw) return 0;
+            try { return Number(JSON.parse(raw).expiresAt || 0); } catch { return 0; }
+        }
+
+        function isSessionValid() {
+            return getSessionExpiry() > Date.now();
+        }
+
+        function isAllowedAdminHost() {
+            const host = window.location.hostname;
+            const isLocalPreview = ['localhost', '127.0.0.1', '0.0.0.0'].includes(host) || location.protocol === 'file:';
+            return isLocalPreview || host === EXPECTED_HOST;
+        }
+
+        function enforceAdminHost() {
+            if (isAllowedAdminHost()) return true;
+            const target = `https://${EXPECTED_HOST}${window.location.pathname}${window.location.search}${window.location.hash}`;
+            window.location.replace(target);
+            return false;
+        }
+
+        async function hashText(value) {
+            const data = new TextEncoder().encode(value);
+            const digest = await crypto.subtle.digest('SHA-256', data);
+            return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        async function verifyPassword(inputValue) {
+            const stored = getPw();
+            const normalized = (inputValue || '').trim();
+            if (!normalized) return false;
+            if (stored === normalized || (stored === DEFAULT_PASSWORD && normalized === DEFAULT_PASSWORD)) return true;
+            return stored === (await hashText(normalized));
+        }
+
+        async function checkDiscordSession() {
+            try {
+                const res = await fetch('/api/auth/discord/me');
+                const data = await res.json();
+                if (data && data.ok) {
+                    setSession();
+                    showAdmin();
+                    return true;
+                }
+            } catch (error) {
+                console.warn('Discord session check failed', error);
+            }
+            return false;
+        }
+
+        function setSession() {
+            sessionStorage.setItem(SESSION_KEY, JSON.stringify({
+                expiresAt: Date.now() + SESSION_TTL_MS,
+                host: window.location.hostname
+            }));
+        }
+
+        async function tryLogin() {
             const input = document.getElementById('pw-input');
             const err = document.getElementById('login-error');
-            if (input.value === getPw()) {
-                sessionStorage.setItem(SESSION_KEY, '1');
+            const valid = await verifyPassword(input.value);
+            if (valid) {
+                setSession();
                 showAdmin();
             } else {
                 err.textContent = 'Incorrect password.';
@@ -190,9 +266,18 @@
             sessionStorage.removeItem(SESSION_KEY);
             document.getElementById('admin-shell').classList.remove('visible');
             document.getElementById('login-shell').style.display = 'flex';
+            const input = document.getElementById('pw-input');
+            if (input) input.value = '';
+            const err = document.getElementById('login-error');
+            if (err) err.textContent = '';
         }
 
         function showAdmin() {
+            if (!enforceAdminHost()) return;
+            if (!isSessionValid()) {
+                logout();
+                return;
+            }
             document.getElementById('login-shell').style.display = 'none';
             document.getElementById('admin-shell').classList.add('visible');
             loadContentForm();
@@ -218,6 +303,11 @@
             document.getElementById('f-heroSubtitle').value = c.heroSubtitle;
             document.getElementById('f-aboutP1').value = c.aboutP1;
             document.getElementById('f-aboutP2').value = c.aboutP2;
+            document.getElementById('f-statusTitle').value = c.statusTitle;
+            document.getElementById('f-statusSubtitle').value = c.statusSubtitle;
+            document.getElementById('f-ctaTitle').value = c.ctaTitle;
+            document.getElementById('f-ctaText').value = c.ctaText;
+            document.getElementById('f-ctaButton').value = c.ctaButton;
         }
 
         function saveContentForm() {
@@ -227,7 +317,12 @@
                 heroLine2: document.getElementById('f-heroLine2').value,
                 heroSubtitle: document.getElementById('f-heroSubtitle').value,
                 aboutP1: document.getElementById('f-aboutP1').value,
-                aboutP2: document.getElementById('f-aboutP2').value
+                aboutP2: document.getElementById('f-aboutP2').value,
+                statusTitle: document.getElementById('f-statusTitle').value,
+                statusSubtitle: document.getElementById('f-statusSubtitle').value,
+                ctaTitle: document.getElementById('f-ctaTitle').value,
+                ctaText: document.getElementById('f-ctaText').value,
+                ctaButton: document.getElementById('f-ctaButton').value
             };
             saveContent(c);
             flashStatus('content-save-status');
@@ -282,10 +377,14 @@
         }
 
         // ----- settings -----
-        function changePassword() {
+        async function changePassword() {
             const val = document.getElementById('f-newpw').value.trim();
-            if (!val) return;
-            localStorage.setItem(PW_KEY, val);
+            if (!val || val.length < 8) {
+                document.getElementById('f-newpw').value = '';
+                flashStatus('pw-save-status');
+                return;
+            }
+            localStorage.setItem(PW_KEY, await hashText(val));
             document.getElementById('f-newpw').value = '';
             flashStatus('pw-save-status');
         }
@@ -308,8 +407,16 @@
             return (str ?? '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
         }
 
-        // ----- boot -----
-        if (sessionStorage.getItem(SESSION_KEY) === '1') showAdmin();
+// ----- boot -----
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (sessionStorage.getItem(SESSION_KEY) === '1') {
+                setSession();
+            }
+            const discordReady = await checkDiscordSession();
+            if (!discordReady) {
+                showAdmin();
+            }
+        });
     </script>
 </body>
 </html>
