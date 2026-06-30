@@ -1,7 +1,7 @@
 export async function onRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
-  const redirectTarget = url.searchParams.get('redirect') || '/admin.html';
+  const redirectTarget = url.searchParams.get('state') || url.searchParams.get('redirect') || '/admin.html';
   const code = url.searchParams.get('code');
   const clientId = env.DISCORD_CLIENT_ID || env.DISCORD_CLIENTID;
   const clientSecret = env.DISCORD_CLIENT_SECRET || env.DISCORD_CLIENTSECRET;
