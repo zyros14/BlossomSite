@@ -87,11 +87,12 @@
     <div class="login-shell" id="login-shell">
         <div class="login-card">
             <h1>Staff Login</h1>
-            <p>Enter the staff password to edit site content and the changelog.</p>
-            <input type="password" id="pw-input" placeholder="Password" onkeydown="if(event.key==='Enter')tryLogin()" />
-            <button onclick="tryLogin()">Log In</button>
+            <p>Sign in with your authorized Discord account to access the admin panel.</p>
+            <button onclick="window.location.href='/auth/discord'" style="margin-bottom:12px;">Log in with Discord</button>
+            <input type="password" id="pw-input" placeholder="Optional backup passphrase" onkeydown="if(event.key==='Enter')tryLogin()" />
+            <button onclick="tryLogin()">Continue with backup passphrase</button>
             <div class="login-error" id="login-error"></div>
-            <p style="font-size:.72rem;color:var(--ink-dim);margin-top:18px;">This panel is intended for <strong>admin.blossoms-mp.com</strong>. Use the subdomain for the best experience. The password is stored locally in this browser only.</p>
+            <p style="font-size:.72rem;color:var(--ink-dim);margin-top:18px;">This panel is intended for <strong>admin.blossoms-mp.com</strong>. Use the subdomain for the best experience. Discord verification is enforced once the Pages secrets are configured.</p>
         </div>
     </div>
 
@@ -183,6 +184,17 @@
         const EXPECTED_HOST = 'admin.blossoms-mp.com';
         const DEFAULT_PASSWORD = 'blossom123';
 
+        function isDiscordSessionActive() {
+            const raw = document.cookie.match(/(?:^|; )blossom_discord_session=([^;]+)/);
+            if (!raw) return false;
+            try {
+                const value = JSON.parse(decodeURIComponent(raw[1]));
+                return Number(value.expiresAt || 0) > Date.now();
+            } catch {
+                return false;
+            }
+        }
+
         function getPw() {
             const stored = localStorage.getItem(PW_KEY);
             return stored || DEFAULT_PASSWORD;
@@ -258,7 +270,7 @@
 
         function showAdmin() {
             if (!enforceAdminHost()) return;
-            if (!isSessionValid()) {
+            if (!isSessionValid() && !isDiscordSessionActive()) {
                 logout();
                 return;
             }
@@ -394,6 +406,9 @@
 // ----- boot -----
         document.addEventListener('DOMContentLoaded', () => {
             if (sessionStorage.getItem(SESSION_KEY) === '1') {
+                setSession();
+            }
+            if (isDiscordSessionActive()) {
                 setSession();
             }
             showAdmin();
