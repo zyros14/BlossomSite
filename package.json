@@ -1,5 +1,4 @@
 {
   "name": "blossom-smp-site",
-  "private": true,
-  "type": "module"
+  "private": true
 }
