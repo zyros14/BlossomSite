@@ -1,25 +1,25 @@
 /* ===== Blossom SMP — shared design system ===== */
 :root {
-    --bg: #f6efe9; /* warm paper */
-    --bg-soft: #f0e6df;
-    --panel: #fffaf7;
-    --panel-2: #fff6f2;
-    --line: #eddacf;
-    --ink: #2a1a17;
-    --ink-dim: #6a584f;
-    --blossom: #f3b6bc;
-    --blossom-deep: #e59aa6;
-    --moss: #8aa07d;
-    --gold: #e8c987;
-    --radius: 18px;
-    --shadow: 0 14px 40px rgba(30,20,18,0.08);
+    --bg: #0b0f12;
+    --bg-soft: #0f1416;
+    --panel: rgba(18,22,24,0.6);
+    --panel-2: rgba(22,26,28,0.6);
+    --line: rgba(255,255,255,0.04);
+    --ink: #e6eef2;
+    --ink-dim: #9aa6ac;
+    --accent: #7dd3fc;
+    --accent-2: #f3b6cb;
+    --moss: #6ec07a;
+    --gold: #f2cc8f;
+    --radius: 14px;
+    --shadow: 0 12px 40px rgba(3,6,8,0.6);
 }
 
 * { box-sizing: border-box; margin: 0; }
 html { scroll-behavior: smooth; font-size: 16px; }
 
 body {
-    background: linear-gradient(180deg, #f8f3ef 0%, #fffefa 60%);
+    background: linear-gradient(180deg, #07090a 0%, #0b0f12 60%);
     color: var(--ink);
     font-family: 'Inter', sans-serif;
     line-height: 1.6;
@@ -46,10 +46,10 @@ img { max-width: 100%; display: block; }
    One quiet layer instead of three stacked effects
    (cursor-follow glow + blobs + petals). Slow, low-opacity drift only. */
 #ambient { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
-.blob { position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.12; animation: drift 36s ease-in-out infinite; }
-.blob.b1 { width: 420px; height: 420px; top: -80px; left: -80px; background: var(--blossom-deep); }
-.blob.b2 { width: 360px; height: 360px; top: 30%; right: -100px; background: var(--moss); animation-delay: -8s; animation-duration: 40s; }
-.blob.b3 { width: 420px; height: 420px; bottom: -120px; left: 28%; background: var(--blossom); animation-delay: -16s; animation-duration: 38s; }
+.blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.08; animation: drift 48s ease-in-out infinite; mix-blend-mode: screen; }
+.blob.b1 { width: 520px; height: 520px; top: -120px; left: -120px; background: linear-gradient(135deg, rgba(125,211,252,0.08), rgba(243,182,203,0.06)); }
+.blob.b2 { width: 420px; height: 420px; top: 28%; right: -140px; background: linear-gradient(135deg, rgba(110,192,122,0.06), rgba(125,211,252,0.04)); animation-delay: -8s; animation-duration: 46s; }
+.blob.b3 { width: 480px; height: 480px; bottom: -160px; left: 24%; background: linear-gradient(135deg, rgba(243,182,203,0.06), rgba(242,204,143,0.04)); animation-delay: -20s; animation-duration: 44s; }
 @keyframes drift {
     0%, 100% { transform: translate(0,0) scale(1); }
     50% { transform: translate(24px,-18px) scale(1.04); }
@@ -66,21 +66,22 @@ img { max-width: 100%; display: block; }
 
 /* ---------- nav ---------- */
 nav {
-    position: sticky; top: 0; z-index: 10;
-    backdrop-filter: blur(12px);
-    background: rgba(27, 22, 18, 0.75);
-    border-bottom: 1px solid var(--line);
+    position: sticky; top: 0; z-index: 30;
+    backdrop-filter: blur(8px) saturate(120%);
+    background: linear-gradient(180deg, rgba(6,9,10,0.56), rgba(6,9,10,0.32));
+    border-bottom: 1px solid rgba(255,255,255,0.03);
 }
 nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 68px; }
-.brand { display: flex; align-items: center; gap: 10px; font-family: 'Fraunces', serif; font-weight: 600; font-size: 1.2rem; }
-.brand .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--blossom); }
+.brand { display: flex; align-items: center; gap: 12px; font-family: 'Fraunces', serif; font-weight: 700; font-size: 1.05rem; letter-spacing: -0.01em; }
+.brand .dot { width: 12px; height: 12px; border-radius: 4px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: 0 4px 18px rgba(125,211,252,0.06); }
+.brand .team-badge { margin-left: 8px; font-size: 0.72rem; color: var(--ink-dim); background: rgba(255,255,255,0.02); padding: 6px 8px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.02); }
 nav .links { display: flex; gap: 28px; font-size: 0.9rem; color: var(--ink-dim); }
 nav .links a { position: relative; transition: color .2s; padding: 4px 0; }
 nav .links a::after { content: ""; position: absolute; left: 0; bottom: -4px; width: 0%; height: 1px; background: var(--blossom); transition: width .25s ease; }
 nav .links a:hover, nav .links a.active { color: var(--blossom); }
 nav .links a:hover::after, nav .links a.active::after { width: 100%; }
-.nav-discord { border: 1px solid var(--line); padding: 8px 18px; border-radius: 999px; font-size: 0.85rem; transition: border-color .2s, color .2s, background .2s; background: rgba(243, 182, 203, 0.05); white-space: nowrap; }
-.nav-discord:hover { border-color: var(--blossom-deep); color: var(--blossom); background: rgba(243, 182, 203, 0.1); }
+.nav-discord { border: 1px solid rgba(255,255,255,0.04); padding: 8px 16px; border-radius: 10px; font-size: 0.9rem; transition: transform .14s ease, box-shadow .14s ease; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); }
+.nav-discord:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(3,6,8,0.5); color: var(--accent); border-color: rgba(125,211,252,0.18); }
 .nav-toggle { display: none; background: none; border: 1px solid var(--line); color: var(--ink); border-radius: 8px; padding: 8px 10px; cursor: pointer; }
 @media (max-width: 820px) {
     nav .links { position: fixed; top: 68px; left: 0; right: 0; background: var(--bg-soft); flex-direction: column; gap: 0; border-bottom: 1px solid var(--line); max-height: 0; overflow: hidden; transition: max-height .3s ease; }
@@ -162,11 +163,11 @@ section.tight { padding: 50px 0; }
 @keyframes pulse-dot { 0%, 100% { opacity: 0.7; } 50% { opacity: 1; } }
 @keyframes spin-pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
 .status-dot .status-text { font-size: 0.95rem; }
-.status-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(243, 182, 203, 0.12); border: 1px solid rgba(243, 182, 203, 0.24); border-radius: 999px; padding: 7px 14px; font-size: 0.82rem; font-weight: 600; color: var(--blossom); }
+.status-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(125,211,252,0.06); border: 1px solid rgba(125,211,252,0.12); border-radius: 999px; padding: 7px 14px; font-size: 0.82rem; font-weight: 600; color: var(--accent); }
 .status-badge .status-badge-icon { font-size: 0.95rem; }
-.status-badge.checking { color: var(--gold); background: rgba(232, 201, 135, 0.12); border-color: rgba(232, 201, 135, 0.24); }
-.status-badge.online { color: var(--blossom); background: rgba(243, 182, 203, 0.14); border-color: rgba(243, 182, 203, 0.3); }
-.status-badge.offline { color: var(--ink-dim); background: rgba(184, 169, 154, 0.12); border-color: rgba(184, 169, 154, 0.24); }
+.status-badge.checking { color: var(--gold); background: rgba(232, 201, 135, 0.08); border-color: rgba(232, 201, 135, 0.12); }
+.status-badge.online { color: var(--accent); background: linear-gradient(90deg, rgba(125,211,252,0.08), rgba(243,182,203,0.04)); border-color: rgba(125,211,252,0.12); }
+.status-badge.offline { color: var(--ink-dim); background: rgba(255,255,255,0.02); border-color: rgba(255,255,255,0.02); }
 .motd { background: var(--bg); padding: 14px 18px; border-radius: 10px; border: 1px solid var(--line); font-family: 'Courier New', monospace; font-size: 0.95rem; color: var(--ink-dim); text-align: center; min-height: 44px; word-break: break-word; }
 .status-refresh { align-self: center; background: transparent; border: 1px solid var(--line); color: var(--ink-dim); padding: 6px 18px; border-radius: 999px; font-size: 0.75rem; cursor: pointer; transition: border-color .2s, color .2s; }
 .status-refresh:hover { border-color: var(--blossom); color: var(--blossom); }
