@@ -1,7 +1,22 @@
 export async function onRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
-  const redirectTarget = url.searchParams.get('state') || url.searchParams.get('redirect') || '/admin.html';
+  // derive redirect target but sanitize to avoid open-redirects
+  let redirectTarget = url.searchParams.get('state') || url.searchParams.get('redirect') || '/admin.html';
+  try {
+    // only allow same-origin paths (must start with single '/') and forbid full URLs
+    if (!redirectTarget || typeof redirectTarget !== 'string') redirectTarget = '/admin.html';
+    // disallow protocol or host in redirect
+    if (redirectTarget.startsWith('http:') || redirectTarget.startsWith('https:') || redirectTarget.startsWith('\\')) {
+      redirectTarget = '/admin.html';
+    }
+    // only allow relative paths beginning with a single '/'
+    if (!redirectTarget.startsWith('/') || redirectTarget.startsWith('//') || redirectTarget.includes(':')) {
+      redirectTarget = '/admin.html';
+    }
+  } catch (e) {
+    redirectTarget = '/admin.html';
+  }
   const code = url.searchParams.get('code');
   const clientId = env.DISCORD_CLIENT_ID || env.DISCORD_CLIENTID;
   const clientSecret = env.DISCORD_CLIENT_SECRET || env.DISCORD_CLIENTSECRET;
@@ -82,21 +97,46 @@ export async function onRequest(context) {
     });
   }
 
-  const cookieValue = encodeURIComponent(JSON.stringify({
+  const expiresAt = Date.now() + 1000 * 60 * 60 * 8;
+
+  const sessionObj = {
     id: userData.id,
     username: userData.username,
     globalName: userData.global_name || userData.username,
-    expiresAt: Date.now() + 1000 * 60 * 60 * 8
-  }));
+    expiresAt
+  };
 
-  const secureFlag = url.protocol === 'https:' ? '; Secure' : '';
-  const sessionCookie = `blossom_discord_session=${cookieValue}; Path=/; HttpOnly; SameSite=Lax; Max-Age=28800${secureFlag}`;
+  let sessionId = null;
+  try {
+    // prefer storing session server-side in KV (binding name: SESSIONS)
+    if (env.SESSIONS && typeof env.SESSIONS.put === 'function') {
+      sessionId = crypto.randomUUID ? crypto.randomUUID() : (Date.now() + '-' + Math.random().toString(36).slice(2, 10));
+      await env.SESSIONS.put(`sess:${sessionId}`, JSON.stringify(sessionObj), { expirationTtl: 28800 });
+    }
+  } catch (e) {
+    // KV unavailable — fall back to embedding session object in HttpOnly cookie
+    sessionId = null;
+  }
+
+  let sessionCookie;
+  if (sessionId) {
+    sessionCookie = `blossom_session_id=${sessionId}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=28800`;
+  } else {
+    // fallback — embed opaque session object (less ideal)
+    sessionCookie = `blossom_session=${encodeURIComponent(JSON.stringify(sessionObj))}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=28800`;
+  }
+
+  // Public (non-HttpOnly) cookie contains minimal, non-sensitive info for client-side UI
+  const publicObj = { expiresAt, username: userData.username };
+  const publicCookie = `blossom_discord_public=${encodeURIComponent(JSON.stringify(publicObj))}; Path=/; Secure; SameSite=Lax; Max-Age=28800`;
+
+  const setCookies = [sessionCookie, publicCookie];
 
   return new Response(null, {
     status: 302,
     headers: {
       Location: redirectTarget,
-      'Set-Cookie': sessionCookie,
+      'Set-Cookie': setCookies,
       'cache-control': 'no-store'
     }
   });

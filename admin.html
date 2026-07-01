@@ -182,22 +182,22 @@
         const SESSION_KEY = 'blossom_admin_session';
         const SESSION_TTL_MS = 1000 * 60 * 60;
         const EXPECTED_HOST = 'admin.blossoms-mp.com';
-        const DEFAULT_PASSWORD = 'imxander2011';
+        // DEFAULT_PASSWORD removed for security. Use the Settings panel to set a password in-browser.
+        const DEFAULT_PASSWORD = null;
 
-        function isDiscordSessionActive() {
-            const raw = document.cookie.match(/(?:^|; )blossom_discord_session=([^;]+)/);
-            if (!raw) return false;
+        async function isDiscordSessionActive() {
             try {
-                const value = JSON.parse(decodeURIComponent(raw[1]));
-                return Number(value.expiresAt || 0) > Date.now();
+                const res = await fetch('/auth/session');
+                if (!res.ok) return false;
+                const j = await res.json();
+                return Boolean(j.authorized);
             } catch {
                 return false;
             }
         }
 
         function getPw() {
-            const stored = localStorage.getItem(PW_KEY);
-            return stored || DEFAULT_PASSWORD;
+            return localStorage.getItem(PW_KEY);
         }
 
         function getSessionExpiry() {
@@ -232,9 +232,9 @@
         async function verifyPassword(inputValue) {
             const stored = getPw();
             const normalized = (inputValue || '').trim();
-            if (!normalized) return false;
-            if (stored === normalized || normalized === DEFAULT_PASSWORD) return true;
-            return stored === (await hashText(normalized));
+            if (!normalized || !stored) return false;
+            const hashed = await hashText(normalized);
+            return stored === hashed;
         }
 
         function setSession() {
@@ -292,7 +292,27 @@
 
         // ----- content form -----
         function loadContentForm() {
-            const c = getContent();
+            // try server-provided content first
+            (async () => {
+                try {
+                    const res = await fetch('/content');
+                    if (res.ok) {
+                        const c = await res.json();
+                        document.getElementById('f-heroEyebrow').value = c.heroEyebrow;
+                        document.getElementById('f-heroLine1').value = c.heroLine1;
+                        document.getElementById('f-heroLine2').value = c.heroLine2;
+                        document.getElementById('f-heroSubtitle').value = c.heroSubtitle;
+                        document.getElementById('f-aboutP1').value = c.aboutP1;
+                        document.getElementById('f-aboutP2').value = c.aboutP2;
+                        document.getElementById('f-statusTitle').value = c.statusTitle;
+                        document.getElementById('f-statusSubtitle').value = c.statusSubtitle;
+                        document.getElementById('f-ctaTitle').value = c.ctaTitle;
+                        document.getElementById('f-ctaText').value = c.ctaText;
+                        document.getElementById('f-ctaButton').value = c.ctaButton;
+                        return;
+                    }
+                } catch (e) { /* ignore and fallback */ }
+                const c = getContent();
             document.getElementById('f-heroEyebrow').value = c.heroEyebrow;
             document.getElementById('f-heroLine1').value = c.heroLine1;
             document.getElementById('f-heroLine2').value = c.heroLine2;
@@ -304,6 +324,7 @@
             document.getElementById('f-ctaTitle').value = c.ctaTitle;
             document.getElementById('f-ctaText').value = c.ctaText;
             document.getElementById('f-ctaButton').value = c.ctaButton;
+            })();
         }
 
         function saveContentForm() {
@@ -320,8 +341,18 @@
                 ctaText: document.getElementById('f-ctaText').value,
                 ctaButton: document.getElementById('f-ctaButton').value
             };
-            saveContent(c);
-            flashStatus('content-save-status');
+            // try to save on server; fallback to localStorage
+            (async () => {
+                try {
+                    const res = await fetch('/content', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify(c) });
+                    if (res.ok) {
+                        flashStatus('content-save-status');
+                        return;
+                    }
+                } catch (e) { /* ignore */ }
+                saveContent(c);
+                flashStatus('content-save-status');
+            })();
         }
 
         // ----- changelog form -----
@@ -408,10 +439,10 @@
             if (sessionStorage.getItem(SESSION_KEY) === '1') {
                 setSession();
             }
-            if (isDiscordSessionActive()) {
-                setSession();
-            }
-            showAdmin();
+            isDiscordSessionActive().then(active => {
+                if (active) setSession();
+                showAdmin();
+            });
         });
     </script>
 </body>

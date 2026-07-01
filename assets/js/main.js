@@ -247,12 +247,17 @@ function escapeHtml(str) {
 }
 
 function isDiscordSessionActive() {
-    const raw = document.cookie.match(/(?:^|; )blossom_discord_session=([^;]+)/);
-    if (!raw) return false;
+    // Prefer server-verified session check
+    return false; // legacy fallback disabled — use `fetchSessionStatus()` instead
+}
+
+async function fetchSessionStatus() {
     try {
-        const value = JSON.parse(decodeURIComponent(raw[1]));
-        return Number(value.expiresAt || 0) > Date.now();
-    } catch {
+        const res = await fetch('/auth/session');
+        if (!res.ok) return false;
+        const j = await res.json();
+        return Boolean(j.authorized);
+    } catch (e) {
         return false;
     }
 }
@@ -264,5 +269,9 @@ function updateAdminLinkVisibility() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-    updateAdminLinkVisibility();
+    (async () => {
+        const ok = await fetchSessionStatus();
+        const link = document.getElementById('nav-admin-link');
+        if (link) link.style.display = ok ? 'inline-flex' : 'none';
+    })();
 });

@@ -1,4 +1,8 @@
-/*
-  X-Frame-Options: DENY
-  X-Content-Type-Options: nosniff
-  Referrer-Policy: strict-origin-when-cross-origin
+/* CORS for auth endpoints removed to avoid overly-broad origins.
+   If you deploy to Cloudflare Pages and need to allow a specific origin,
+   add a single trusted origin here, for example:
+
+  /api/auth/*
+  Access-Control-Allow-Origin: https://admin.blossoms-mp.com
+
+*/
