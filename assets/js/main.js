@@ -348,12 +348,14 @@ function updateUserMenu(session = { authorized: false }) {
         renderUserButtonContent(userButton, session.user.username, session.user.avatarUrl);
         userButton.dataset.auth = 'true';
         userButton.classList.add('logged-in');
+        userButton.classList.remove('discord-login');
         userButton.setAttribute('aria-expanded', 'false');
         if (adminLink) adminLink.style.display = 'inline-flex';
     } else {
-        userButton.textContent = 'Log in with Discord';
+        userButton.innerHTML = '<span class="user-button-icon">🎮</span><span>Log in with Discord</span>';
         userButton.dataset.auth = 'false';
         userButton.classList.remove('logged-in');
+        userButton.classList.add('discord-login');
         userButton.removeAttribute('aria-expanded');
         if (adminLink) adminLink.style.display = 'none';
     }

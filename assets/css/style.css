@@ -103,8 +103,11 @@ nav .links a:hover::after, nav .links a.active::after { width: 100%; }
 .user-button:hover { background: rgba(122,199,255,0.12); transform: translateY(-1px); border-color: rgba(122,199,255,0.5); }
 .user-button.logged-in { border-color: rgba(122,199,255,0.55); }
 .user-button.logged-in::after { content: "▾"; margin-left: 10px; font-size: 0.88rem; color: rgba(255,255,255,0.72); }
+.user-button.discord-login { background: linear-gradient(145deg, rgba(88,101,242,0.14), rgba(61,72,197,0.15)); border-color: rgba(114,137,218,0.55); color: #e8ebff; }
+.user-button.discord-login:hover { background: linear-gradient(145deg, rgba(88,101,242,0.22), rgba(61,72,197,0.24)); }
+.user-button.discord-login .user-button-icon { display: inline-flex; width: 24px; height: 24px; align-items: center; justify-content: center; border-radius: 999px; background: rgba(114,137,218,0.18); color: #dfe4ff; font-size: 0.96rem; }
 .user-button .user-avatar { width: 28px; height: 28px; border-radius: 999px; object-fit: cover; border: 1px solid rgba(255,255,255,0.12); }
-.user-dropdown { display: none; position: absolute; right: 0; top: calc(100% + 10px); min-width: 180px; background: rgba(12,16,24,0.98); border: 1px solid rgba(122,199,255,0.18); border-radius: 16px; box-shadow: 0 24px 60px rgba(0,0,0,0.35); backdrop-filter: blur(24px); opacity: 0; visibility: hidden; transform: translateY(-8px); transition: opacity .2s ease, transform .2s ease, visibility .2s ease; z-index: 50; pointer-events: none; }
+.user-dropdown { display: none; position: absolute; right: 0; top: calc(100% + 10px); min-width: 180px; background: rgba(12,16,24,0.98); border: 1px solid rgba(122,199,255,0.18); border-radius: 16px; box-shadow: 0 24px 60px rgba(0,0,0,0.35);Backdrop-filter: blur(24px); opacity: 0; visibility: hidden; transform: translateY(-8px); transition: opacity .2s ease, transform .2s ease, visibility .2s ease; z-index: 50; pointer-events: none; }
 .user-dropdown.open { display: block; opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
 .user-dropdown::before { content: ""; position: absolute; top: -6px; right: 18px; width: 12px; height: 12px; background: rgba(12,16,24,0.98); transform: rotate(45deg); border-left: 1px solid rgba(122,199,255,0.16); border-top: 1px solid rgba(122,199,255,0.16); }
 .user-dropdown button { width: 100%; text-align: left; background: transparent; border: none; color: var(--ink); padding: 14px 18px; font-size: 0.92rem; cursor: pointer; transition: background .2s ease, color .2s ease; }
