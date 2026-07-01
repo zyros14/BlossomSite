@@ -358,7 +358,18 @@
         // ----- changelog form -----
         let clEntries = [];
 
-        function loadChangelogForm() {
+        async function loadChangelogForm() {
+            try {
+                const res = await fetch('/changelog');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (Array.isArray(data) && data.length) {
+                        clEntries = data;
+                        renderClList();
+                        return;
+                    }
+                }
+            } catch (e) { /* ignore */ }
             clEntries = getChangelog();
             renderClList();
         }
@@ -398,7 +409,19 @@
             renderClList();
         }
 
-        function saveChangelogForm() {
+        async function saveChangelogForm() {
+            try {
+                const res = await fetch('/changelog', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'content-type': 'application/json' },
+                    body: JSON.stringify(clEntries)
+                });
+                if (res.ok) {
+                    flashStatus('changelog-save-status');
+                    return;
+                }
+            } catch (e) { /* ignore */ }
             saveChangelog(clEntries);
             flashStatus('changelog-save-status');
         }

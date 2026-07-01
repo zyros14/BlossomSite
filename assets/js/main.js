@@ -43,10 +43,19 @@
 const blossomSections = document.querySelectorAll('section');
 const blossomObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-        if (entry.isIntersecting) entry.target.classList.add('visible');
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            blossomObserver.unobserve(entry.target);
+        }
     });
 }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
 blossomSections.forEach(s => blossomObserver.observe(s));
+
+function animateHero() {
+    const heroCard = document.querySelector('.hero-card');
+    if (!heroCard) return;
+    requestAnimationFrame(() => heroCard.classList.add('ready'));
+}
 
 // mobile nav toggle
 (function () {
@@ -145,6 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchServerStatus();
         setInterval(fetchServerStatus, 60000);
     }
+    animateHero();
 });
 
 // ===== Editable site content + changelog (powered by admin.html) =====
@@ -197,9 +207,32 @@ function saveChangelog(entries) {
     localStorage.setItem(BLOSSOM_CHANGELOG_KEY, JSON.stringify(entries));
 }
 
+async function fetchServerContent() {
+    try {
+        const res = await fetch('/content');
+        if (!res.ok) throw new Error('no content');
+        const body = await res.json();
+        return { ...defaultContent, ...body };
+    } catch (e) {
+        return { ...defaultContent, ...getContent() };
+    }
+}
+
+async function fetchServerChangelog() {
+    try {
+        const res = await fetch('/changelog');
+        if (!res.ok) throw new Error('no changelog');
+        const body = await res.json();
+        if (Array.isArray(body) && body.length) return body;
+        return getChangelog();
+    } catch (e) {
+        return getChangelog();
+    }
+}
+
 // applies stored content overrides to index.html's editable elements
-function applyContentOverrides() {
-    const c = getContent();
+async function applyContentOverrides() {
+    const c = await fetchServerContent();
     const map = {
         heroEyebrow: 'heroEyebrow',
         heroLine1: 'heroLine1',
@@ -220,10 +253,10 @@ function applyContentOverrides() {
 }
 
 // renders the changelog timeline into the given container id
-function renderChangelog(containerId) {
+async function renderChangelog(containerId) {
     const el = document.getElementById(containerId);
     if (!el) return;
-    const entries = getChangelog();
+    const entries = await fetchServerChangelog();
     el.innerHTML = entries.map(e => `
         <div class="tl-item">
             <div class="tl-date">${escapeHtml(e.date)}</div>
@@ -246,32 +279,137 @@ function escapeHtml(str) {
     return div.innerHTML;
 }
 
-function isDiscordSessionActive() {
-    // Prefer server-verified session check
-    return false; // legacy fallback disabled — use `fetchSessionStatus()` instead
+function getCookie(name) {
+    const cookies = document.cookie.split(';').map(c => c.trim());
+    const cookie = cookies.find(c => c.startsWith(`${name}=`));
+    return cookie ? cookie.slice(name.length + 1) : '';
+}
+
+function getPublicSessionFromCookie() {
+    const raw = getCookie('blossom_discord_public');
+    if (!raw) return null;
+
+    try {
+        const data = JSON.parse(decodeURIComponent(raw));
+        if (!data || !data.username || Number(data.expiresAt || 0) <= Date.now()) return null;
+        return { authorized: true, user: { username: data.username, avatarUrl: data.avatarUrl || null } };
+    } catch (e) {
+        return null;
+    }
 }
 
 async function fetchSessionStatus() {
     try {
-        const res = await fetch('/auth/session');
-        if (!res.ok) return false;
-        const j = await res.json();
-        return Boolean(j.authorized);
+        const res = await fetch('/auth/session', { credentials: 'include' });
+        if (res.ok) {
+            const session = await res.json();
+            if (session.authorized) return session;
+        }
     } catch (e) {
+        console.warn('Session endpoint failed', e);
+    }
+
+    return getPublicSessionFromCookie() || { authorized: false };
+}
+
+function clearPublicSessionCookie() {
+    document.cookie = 'blossom_discord_public=; Path=/; Max-Age=0; SameSite=Lax; Secure';
+}
+
+async function logoutDiscord() {
+    try {
+        const res = await fetch('/auth/logout', { method: 'POST', credentials: 'include' });
+        if (!res.ok) throw new Error('Logout failed');
+        clearPublicSessionCookie();
+        return true;
+    } catch (e) {
+        console.warn('Logout failed', e);
+        clearPublicSessionCookie();
         return false;
     }
 }
 
-function updateAdminLinkVisibility() {
-    const link = document.getElementById('nav-admin-link');
-    if (!link) return;
-    link.style.display = isDiscordSessionActive() ? 'inline-flex' : 'none';
+function renderUserButtonContent(userButton, username, avatarUrl) {
+    if (avatarUrl) {
+        userButton.innerHTML = `<img class="user-avatar" src="${escapeHtml(avatarUrl)}" alt="" width="28" height="28"><span>${escapeHtml(`Hi, ${username}`)}</span>`;
+    } else {
+        userButton.textContent = `Hi, ${username}`;
+    }
+}
+
+function updateUserMenu(session = { authorized: false }) {
+    const userButton = document.getElementById('userButton');
+    const userDropdown = document.getElementById('userDropdown');
+    const adminLink = document.getElementById('nav-admin-link');
+    if (userDropdown) userDropdown.classList.remove('open');
+    if (!userButton) return;
+
+    if (session.authorized && session.user && session.user.username) {
+        renderUserButtonContent(userButton, session.user.username, session.user.avatarUrl);
+        userButton.dataset.auth = 'true';
+        userButton.classList.add('logged-in');
+        if (adminLink) adminLink.style.display = 'inline-flex';
+    } else {
+        userButton.textContent = 'Log in with Discord';
+        userButton.dataset.auth = 'false';
+        userButton.classList.remove('logged-in');
+        if (adminLink) adminLink.style.display = 'none';
+    }
+}
+
+function setupUserMenu() {
+    const userMenu = document.getElementById('userMenu');
+    const userButton = document.getElementById('userButton');
+    const userDropdown = document.getElementById('userDropdown');
+    const logoutAction = document.getElementById('logoutAction');
+
+    if (!userMenu || !userButton || !userDropdown) return;
+
+    userButton.addEventListener('click', async (event) => {
+        event.stopPropagation();
+        const isAuth = userButton.dataset.auth === 'true';
+        if (!isAuth) {
+            window.location.href = '/auth/discord';
+            return;
+        }
+        userDropdown.classList.toggle('open');
+    });
+
+    if (logoutAction) {
+        logoutAction.addEventListener('click', async () => {
+            const ok = await logoutDiscord();
+            if (ok) {
+                updateUserMenu({ authorized: false });
+                if (userDropdown) userDropdown.classList.remove('open');
+            }
+        });
+    }
+
+    document.addEventListener('click', (event) => {
+        if (!userMenu.contains(event.target)) {
+            userDropdown.classList.remove('open');
+        }
+    });
 }
 
 window.addEventListener('DOMContentLoaded', () => {
     (async () => {
-        const ok = await fetchSessionStatus();
-        const link = document.getElementById('nav-admin-link');
-        if (link) link.style.display = ok ? 'inline-flex' : 'none';
+        const session = await fetchSessionStatus();
+        updateUserMenu(session);
+        setupUserMenu();
+
+        if (document.getElementById('heroEyebrow')) {
+            await applyContentOverrides();
+        }
+        if (document.getElementById('changelog-timeline')) {
+            await renderChangelog('changelog-timeline');
+        }
     })();
+
+    if (document.getElementById('statusDot') || document.getElementById('pillDot')) {
+        fetchServerStatus();
+        setInterval(fetchServerStatus, 60000);
+    }
+
+    animateHero();
 });

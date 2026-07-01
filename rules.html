@@ -17,14 +17,20 @@
 
     <nav>
         <div class="wrap">
-            <div class="brand"><span class="dot"></span> Blossom SMP <span class="team-badge">Built by Blossom Devs</span></div>
+            <div class="brand user-brand"><span class="dot"></span> Blossom SMP <span class="team-badge">Built by Blossom Devs</span></div>
+            <div class="user-menu" id="userMenu">
+                <button class="user-button" id="userButton" type="button">Log in with Discord</button>
+                <div class="user-dropdown" id="userDropdown">
+                    <button id="logoutAction" type="button">Log out</button>
+                </div>
+            </div>
             <div class="links">
                 <a href="index.html">Home</a>
                 <a href="rules.html" class="active">Rules</a>
                 <a href="changelog.html">Changelog</a>
+                <a href="admin.html" id="nav-admin-link" style="display:none;">Admin Panel</a>
             </div>
             <button class="nav-toggle" aria-label="Menu">☰</button>
-            <a class="nav-discord" href="https://discord.gg/Z3HkAgtzfa" target="_blank" rel="noopener">Discord</a>
         </div>
     </nav>
 
