@@ -348,11 +348,13 @@ function updateUserMenu(session = { authorized: false }) {
         renderUserButtonContent(userButton, session.user.username, session.user.avatarUrl);
         userButton.dataset.auth = 'true';
         userButton.classList.add('logged-in');
+        userButton.setAttribute('aria-expanded', 'false');
         if (adminLink) adminLink.style.display = 'inline-flex';
     } else {
         userButton.textContent = 'Log in with Discord';
         userButton.dataset.auth = 'false';
         userButton.classList.remove('logged-in');
+        userButton.removeAttribute('aria-expanded');
         if (adminLink) adminLink.style.display = 'none';
     }
 }
@@ -365,6 +367,9 @@ function setupUserMenu() {
 
     if (!userMenu || !userButton || !userDropdown) return;
 
+    userButton.setAttribute('aria-haspopup', 'true');
+    userButton.setAttribute('aria-controls', 'userDropdown');
+
     userButton.addEventListener('click', async (event) => {
         event.stopPropagation();
         const isAuth = userButton.dataset.auth === 'true';
@@ -372,7 +377,8 @@ function setupUserMenu() {
             window.location.href = '/auth/discord';
             return;
         }
-        userDropdown.classList.toggle('open');
+        const opened = userDropdown.classList.toggle('open');
+        userButton.setAttribute('aria-expanded', String(opened));
     });
 
     if (logoutAction) {
@@ -380,7 +386,10 @@ function setupUserMenu() {
             const ok = await logoutDiscord();
             if (ok) {
                 updateUserMenu({ authorized: false });
-                if (userDropdown) userDropdown.classList.remove('open');
+                if (userDropdown) {
+                    userDropdown.classList.remove('open');
+                    userButton.setAttribute('aria-expanded', 'false');
+                }
             }
         });
     }
@@ -388,6 +397,14 @@ function setupUserMenu() {
     document.addEventListener('click', (event) => {
         if (!userMenu.contains(event.target)) {
             userDropdown.classList.remove('open');
+            userButton.setAttribute('aria-expanded', 'false');
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && userDropdown.classList.contains('open')) {
+            userDropdown.classList.remove('open');
+            userButton.setAttribute('aria-expanded', 'false');
         }
     });
 }
