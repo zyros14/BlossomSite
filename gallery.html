@@ -15,23 +15,31 @@
     <div id="cursor-glow"></div>
     <div id="petals"></div>
 
-    <nav>
-        <div class="wrap">
-            <div class="brand user-brand"><span class="dot"></span> Blossom SMP <span class="team-badge">Built by Blossom Devs</span></div>
-            <div class="user-menu" id="userMenu">
-                <button class="user-button discord-login" id="userButton" type="button" data-auth="false" onclick="window.location.href='/auth/discord'">Log in with Discord</button>
-                <div class="user-dropdown" id="userDropdown">
-                    <button id="logoutAction" type="button">Log out</button>
-                </div>
-            </div>
-            <div class="links">
+    <nav class="site-nav">
+        <div class="wrap nav-wrap">
+            <a class="brand user-brand" href="index.html" aria-label="Blossom SMP Home">
+                <span>Blossom SMP</span>
+            </a>
+
+            <div class="links" id="navLinks">
                 <a href="index.html">Home</a>
+                <a href="#features">Features</a>
+                <a href="#how-to-join">Join</a>
                 <a href="rules.html">Rules</a>
-                <a href="gallery.html" class="active">Gallery</a>
                 <a href="changelog.html">Changelog</a>
                 <a href="admin.html" id="nav-admin-link" style="display:none;">Admin Panel</a>
             </div>
-            <button class="nav-toggle" aria-label="Menu">☰</button>
+
+            <div class="nav-actions">
+                <a class="nav-discord" href="https://discord.gg/Z3HkAgtzfa" target="_blank" rel="noopener">Discord Server</a>
+                <div class="user-menu" id="userMenu">
+                    <button class="user-button discord-login" id="userButton" type="button" data-auth="false" onclick="window.location.href='/auth/discord'">Log in</button>
+                    <div class="user-dropdown" id="userDropdown">
+                        <button id="logoutAction" type="button">Log out</button>
+                    </div>
+                </div>
+                <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">☰</button>
+            </div>
         </div>
     </nav>
 
@@ -50,13 +58,11 @@
     </section>
 
     <footer>
-        <div>Blossom SMP — Java 108.181.119.197:50002 · Bedrock 108.181.119.197:50018 • Built by Blossom Devs • v1.0</div>
+        <div>Blossom SMP - Java 108.181.119.197:50002 · Bedrock 108.181.119.197:50018</div>
         <div class="footer-links">
             <a href="rules.html">Rules</a>
-            <a href="gallery.html">Gallery</a>
             <a href="changelog.html">Changelog</a>
-            <a href="https://discord.gg/Z3HkAgtzfa" target="_blank">Discord</a>
-            <a href="admin.html">Staff Login</a>
+            <a href="https://discord.gg/Z3HkAgtzfa" target="_blank" rel="noopener">Discord</a>
         </div>
     </footer>
 

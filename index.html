@@ -3,175 +3,554 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Blossom SMP — A calm survival world</title>
-    <meta name="description" content="Blossom SMP is a chill, pay-to-win-free Minecraft survival server with Waystones, proximity chat, and land claims." />
+    <title>Blossom SMP - Minecraft SMP</title>
+    <meta name="description" content="Blossom SMP is a relaxed Java and Bedrock Minecraft survival server with land claims, waystones, proximity chat, no pay-to-win, and a calm cherry blossom community." />
+    <meta property="og:title" content="Blossom SMP" />
+    <meta property="og:description" content="A calm, no pay-to-win Minecraft SMP for Java and Bedrock players." />
+    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#f7a8c8" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="assets/css/style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+:root {
+    --bg: #08070d;
+    --bg-2: #120d18;
+    --panel: rgba(24, 18, 31, 0.78);
+    --panel-solid: #17111f;
+    --surface: rgba(255,255,255,0.055);
+    --surface-2: rgba(255,255,255,0.085);
+    --line: rgba(255,255,255,0.105);
+    --ink: #fff8fc;
+    --ink-dim: #cdbfcb;
+    --muted: #9f8fa0;
+    --pink: #f7a8c8;
+    --pink-2: #ff7fb7;
+    --lavender: #b9a7ff;
+    --mint: #a8f3cf;
+    --gold: #f4d79a;
+    --shadow: 0 30px 110px rgba(0,0,0,0.34);
+    --radius: 24px;
+}
+
+* { box-sizing: border-box; margin: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at 14% 8%, rgba(255,127,183,0.16), transparent 26%),
+        radial-gradient(circle at 82% 12%, rgba(185,167,255,0.16), transparent 28%),
+        radial-gradient(circle at 50% 90%, rgba(168,243,207,0.07), transparent 32%),
+        linear-gradient(180deg, #09070e 0%, #120c18 48%, #07060a 100%);
+    color: var(--ink);
+    font-family: Inter, system-ui, sans-serif;
+    line-height: 1.65;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image:
+        linear-gradient(rgba(255,255,255,0.026) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.026) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent 78%);
+}
+
+h1, h2, h3, h4 { font-family: Fraunces, Georgia, serif; font-weight: 700; line-height: 1.05; letter-spacing: -0.035em; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; }
+.wrap { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+::selection { background: var(--pink); color: #24121b; }
+
+#scroll-progress { position: fixed; top: 0; left: 0; height: 3px; width: 0%; z-index: 100; background: linear-gradient(90deg, var(--pink), var(--lavender), var(--mint)); box-shadow: 0 0 18px rgba(247,168,200,.55); }
+#ambient, #petals { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+.blob { position: absolute; border-radius: 999px; filter: blur(82px); opacity: .18; animation: drift 30s ease-in-out infinite; }
+.b1 { width: 380px; height: 380px; left: -120px; top: 90px; background: var(--pink-2); }
+.b2 { width: 420px; height: 420px; right: -160px; top: 22%; background: var(--lavender); animation-delay: -9s; }
+.b3 { width: 360px; height: 360px; left: 35%; bottom: -180px; background: var(--mint); animation-delay: -16s; opacity: .11; }
+@keyframes drift { 50% { transform: translate(24px, -30px) scale(1.08); } }
+.petal { position: absolute; top: -10vh; width: 10px; height: 14px; border-radius: 70% 10% 70% 10%; background: rgba(247,168,200,.62); animation: petalFall linear infinite; }
+@keyframes petalFall { to { transform: translateY(115vh) rotate(360deg); } }
+
+.site-nav { position: sticky; top: 0; z-index: 50; backdrop-filter: blur(22px) saturate(150%); background: rgba(9, 7, 14, .72); border-bottom: 1px solid var(--line); }
+.nav-wrap { height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.brand { display: inline-flex; align-items: center; gap: 10px; font-family: Fraunces, serif; font-size: 1.12rem; font-weight: 700; white-space: nowrap; }
+.brand-mark { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 13px; background: linear-gradient(135deg, var(--pink), var(--lavender)); color: #21121a; box-shadow: 0 12px 34px rgba(247,168,200,.24); }
+.team-badge { font-family: Inter, sans-serif; font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--pink); border: 1px solid rgba(247,168,200,.28); background: rgba(247,168,200,.08); padding: 7px 10px; border-radius: 999px; }
+.links { display: flex; align-items: center; gap: 24px; color: var(--ink-dim); font-size: .93rem; font-weight: 600; }
+.links a { position: relative; transition: color .2s ease; }
+.links a::after { content: ""; position: absolute; left: 0; right: 0; bottom: -9px; height: 2px; border-radius: 999px; background: linear-gradient(90deg, var(--pink), var(--lavender)); transform: scaleX(0); transition: transform .22s ease; }
+.links a:hover, .links a.active { color: var(--ink); }
+.links a:hover::after, .links a.active::after { transform: scaleX(1); }
+.nav-actions { display: flex; align-items: center; gap: 12px; }
+.nav-discord, .user-button { border: 1px solid var(--line); background: rgba(255,255,255,.055); color: var(--ink); padding: 10px 16px; border-radius: 999px; cursor: pointer; font-weight: 700; transition: transform .2s ease, border-color .2s ease, background .2s ease; }
+.nav-discord:hover, .user-button:hover { transform: translateY(-2px); border-color: rgba(247,168,200,.42); background: rgba(247,168,200,.1); }
+.user-menu { position: relative; }
+.user-dropdown { display: none; position: absolute; right: 0; top: calc(100% + 10px); min-width: 160px; background: rgba(18, 12, 24, .98); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; }
+.user-dropdown.open { display: block; }
+.user-dropdown button { width: 100%; background: transparent; border: 0; color: var(--ink); text-align: left; padding: 14px 16px; cursor: pointer; }
+.user-dropdown button:hover { background: rgba(255,255,255,.07); }
+.nav-toggle { display: none; color: var(--ink); background: rgba(255,255,255,.06); border: 1px solid var(--line); border-radius: 12px; padding: 9px 12px; cursor: pointer; }
+
+main, footer, nav { position: relative; z-index: 2; }
+.hero { padding: 46px 0 42px; }
+.hero-grid { display: grid; grid-template-columns: 1fr .66fr; gap: 24px; align-items: center; }
+.hero-copy, .join-card, .cta-card, .status-card, .feature, .preview-card, .step-card { position: relative; overflow: hidden; background: linear-gradient(180deg, rgba(255,255,255,.085), rgba(255,255,255,.04)); border: 1px solid var(--line); box-shadow: var(--shadow); backdrop-filter: blur(18px); }
+.hero-copy { padding: 38px; border-radius: 30px; }
+.hero-copy::before, .join-card::before, .cta-card::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at 18% 12%, rgba(247,168,200,.18), transparent 28%), radial-gradient(circle at 84% 84%, rgba(185,167,255,.14), transparent 32%); }
+.eyebrow,
+.section-kicker {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    color: var(--pink);
+    font-size: .78rem;
+    font-weight: 800;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+}
+
+.eyebrow::before,
+.eyebrow::after,
+.section-kicker::before,
+.section-kicker::after {
+    content: "";
+    width: 42px;
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, transparent, currentColor, transparent);
+    opacity: .9;
+}
+.title { position: relative; z-index: 1; font-size: clamp(2.55rem, 5.4vw, 4.85rem); }
+.title em { font-style: italic; background: linear-gradient(135deg, #fff, var(--pink), var(--lavender)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.subtitle { position: relative; z-index: 1; margin-top: 16px; max-width: 640px; color: var(--ink-dim); font-size: 1rem; }
+.hero-actions, .cta-actions { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: 0 22px; border-radius: 999px; border: 1px solid transparent; cursor: pointer; font-weight: 800; transition: transform .2s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease; }
+.btn:hover { transform: translateY(-3px); }
+.btn.primary { color: #24111b; background: linear-gradient(135deg, var(--pink), var(--lavender)); box-shadow: 0 18px 44px rgba(247,168,200,.22); }
+.btn.secondary, .btn-outline { color: var(--ink); background: rgba(255,255,255,.06); border-color: var(--line); }
+.btn.secondary:hover, .btn-outline:hover { border-color: rgba(247,168,200,.42); background: rgba(247,168,200,.1); }
+.trust-row { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 9px; margin-top: 22px; }
+.trust-row span, .hero-pill { color: var(--ink-dim); background: rgba(255,255,255,.06); border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px; font-size: .76rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+
+.join-card { border-radius: 28px; padding: 24px; }
+.join-card-top { display: inline-flex; align-items: center; gap: 9px; color: var(--mint); font-size: .82rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.live-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 18px rgba(168,243,207,.8); }
+.join-card h2 { margin-top: 14px; font-size: 1.8rem; }
+.join-card p { color: var(--ink-dim); margin-top: 8px; }
+.ip-cluster { display: grid; gap: 12px; margin-top: 18px; }
+.ip-box { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px; border-radius: 16px; background: rgba(0,0,0,.18); border: 1px solid var(--line); transition: transform .2s ease, border-color .2s ease, background .2s ease; }
+.ip-box:hover, .ip-box.copied { transform: translateY(-2px); border-color: rgba(247,168,200,.42); background: rgba(247,168,200,.08); }
+.ip-box .label { color: var(--muted); font-size: .72rem; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; }
+.ip-box .value { margin-top: 3px; font-family: Fraunces, serif; font-size: 1.05rem; word-break: break-all; }
+.small-value { color: var(--ink-dim); font-size: .88rem; }
+.ip-box button, .status-refresh { flex: 0 0 auto; color: var(--ink); background: rgba(255,255,255,.07); border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; cursor: pointer; font-weight: 800; }
+.ip-box button:hover, .status-refresh:hover { border-color: rgba(247,168,200,.55); }
+.mini-note { margin-top: 16px; color: var(--muted); font-size: .86rem; }
+
+section { padding: 84px 0; opacity: 0; transform: translateY(18px); transition: opacity .55s ease, transform .55s ease; }
+section.visible { opacity: 1; transform: translateY(0); }
+.split-section { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: rgba(255,255,255,.025); }
+.split-grid { display: grid; grid-template-columns: .8fr 1fr; gap: 44px; align-items: start; }
+.split-grid h2, .section-head h2 { font-size: clamp(2.2rem, 5vw, 4rem); }
+.about-copy { color: var(--ink-dim); font-size: 1.05rem; }
+.about-copy p + p { margin-top: 18px; }
+.section-head { max-width: 720px; margin: 0 auto 44px; text-align: center; }
+.section-head.left { text-align: left; margin: 0; }
+.section-head p { color: var(--ink-dim); margin-top: 16px; }
+.features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.feature { border-radius: var(--radius); padding: 28px; transition: transform .22s ease, border-color .22s ease, background .22s ease; }
+.feature:hover, .preview-card:hover, .step-card:hover { transform: translateY(-6px); border-color: rgba(247,168,200,.34); background: rgba(255,255,255,.075); }
+.glyph { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 16px; background: linear-gradient(135deg, rgba(247,168,200,.22), rgba(185,167,255,.16)); border: 1px solid var(--line); font-size: 1.35rem; }
+.feature h3 { margin-top: 20px; font-size: 1.24rem; }
+.feature p, .preview-card p, .step-card p { color: var(--ink-dim); margin-top: 10px; font-size: .95rem; }
+.showcase { padding-top: 30px; }
+.preview-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+.preview-card { min-height: 210px; border-radius: var(--radius); padding: 24px; transition: transform .22s ease, border-color .22s ease, background .22s ease; }
+.preview-pill { display: inline-flex; padding: 7px 11px; border-radius: 999px; color: var(--pink); background: rgba(247,168,200,.09); border: 1px solid rgba(247,168,200,.18); font-size: .72rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 28px; }
+.preview-card h4 { font-size: 1.18rem; }
+.status-layout { display: grid; grid-template-columns: .86fr 1fr; gap: 36px; align-items: center; }
+.status-card { border-radius: 28px; padding: 30px; }
+.status-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+.status-dot { display: flex; align-items: center; gap: 10px; font-weight: 800; }
+.status-dot .dot { width: 13px; height: 13px; border-radius: 50%; background: var(--muted); }
+.status-dot .dot.online { background: var(--mint); box-shadow: 0 0 18px rgba(168,243,207,.55); }
+.status-dot .dot.offline { background: #ff6b7d; }
+.status-dot .dot.checking { animation: blink 1s infinite; }
+@keyframes blink { 50% { opacity: .35; } }
+.status-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 13px; border-radius: 999px; background: rgba(255,255,255,.06); border: 1px solid var(--line); color: var(--ink-dim); font-size: .84rem; font-weight: 800; }
+.status-badge.online { color: var(--mint); border-color: rgba(168,243,207,.26); background: rgba(168,243,207,.08); }
+.status-badge.offline { color: #ff9aaa; border-color: rgba(255,106,125,.22); background: rgba(255,106,125,.07); }
+.motd { margin: 18px 0; padding: 16px; min-height: 54px; display: grid; place-items: center; border-radius: 16px; background: rgba(0,0,0,.2); border: 1px solid var(--line); color: var(--ink-dim); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; text-align: center; word-break: break-word; }
+.join-steps-section { padding-top: 34px; }
+.steps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+.step-card { border-radius: var(--radius); padding: 24px; transition: transform .22s ease, border-color .22s ease, background .22s ease; }
+.step-card span { color: var(--pink); font-family: Fraunces, serif; font-size: 1.6rem; font-weight: 800; }
+.step-card h3 { margin-top: 16px; font-size: 1.16rem; }
+.cta { padding-top: 36px; }
+.cta-card { border-radius: 34px; padding: 52px; text-align: center; }
+.cta-card h2 { font-size: clamp(2.3rem, 5vw, 4.2rem); }
+.cta-card p { max-width: 640px; margin: 16px auto 0; color: var(--ink-dim); }
+.cta-actions { justify-content: center; }
+footer { padding: 46px 20px 54px; text-align: center; color: var(--muted); border-top: 1px solid var(--line); }
+.footer-links { display: flex; justify-content: center; gap: 22px; flex-wrap: wrap; margin-top: 16px; }
+.footer-links a:hover { color: var(--pink); }
+
+@media (max-width: 1180px) and (min-width: 981px) {
+    .hero { padding: 34px 0 36px; }
+    .hero-copy { padding: 32px; }
+    .title { font-size: clamp(2.5rem, 4.7vw, 4.35rem); }
+    .join-card { padding: 22px; }
+    .ip-box .value { font-size: .96rem; }
+}
+@media (max-width: 980px) {
+    .hero-grid, .split-grid, .status-layout { grid-template-columns: 1fr; }
+    .features-grid, .preview-strip, .steps-grid { grid-template-columns: repeat(2, 1fr); }
+    .section-head.left { text-align: center; margin: 0 auto 28px; }
+}
+@media (max-width: 760px) {
+    .wrap { width: min(100% - 28px, 1180px); }
+    .nav-wrap { height: 68px; }
+    .team-badge, .nav-discord, .user-menu { display: none; }
+    .nav-toggle { display: inline-flex; }
+    .links { position: fixed; top: 68px; left: 14px; right: 14px; display: grid; gap: 0; padding: 10px; border: 1px solid var(--line); border-radius: 18px; background: rgba(14,10,20,.96); box-shadow: var(--shadow); transform: translateY(-12px); opacity: 0; pointer-events: none; transition: opacity .2s ease, transform .2s ease; }
+    .links.open { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .links a { padding: 13px 12px; }
+    .links a::after { display: none; }
+    .hero { padding: 46px 0 46px; }
+    .hero-copy, .join-card, .cta-card { padding: 28px; border-radius: 26px; }
+    .title { font-size: clamp(2.65rem, 14vw, 4.4rem); }
+    .features-grid, .preview-strip, .steps-grid { grid-template-columns: 1fr; }
+    .hero-actions, .cta-actions { flex-direction: column; }
+    .btn { width: 100%; }
+    section { padding: 58px 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
+    </style>
 </head>
 <body>
-
     <div id="scroll-progress"></div>
-    <div id="ambient"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
-    <div id="cursor-glow"></div>
-    <div id="petals"></div>
+    <div id="ambient" aria-hidden="true">
+        <div class="blob b1"></div>
+        <div class="blob b2"></div>
+        <div class="blob b3"></div>
+        <div class="grid-glow"></div>
+    </div>
+    <div id="petals" aria-hidden="true"></div>
 
-    <nav>
-        <div class="wrap">
-            <div class="brand user-brand"><span class="dot"></span> Blossom SMP <span class="team-badge">Built by Blossom Devs</span></div>
-            <div class="user-menu" id="userMenu">
-                <button class="user-button discord-login" id="userButton" type="button" data-auth="false" onclick="window.location.href='/auth/discord'">Log in with Discord</button>
-                <div class="user-dropdown" id="userDropdown">
-                    <button id="logoutAction" type="button">Log out</button>
-                </div>
-            </div>
-            <div class="links">
+    <nav class="site-nav">
+        <div class="wrap nav-wrap">
+            <a class="brand user-brand" href="index.html" aria-label="Blossom SMP Home">
+                <span>Blossom SMP</span>
+            </a>
+
+            <div class="links" id="navLinks">
                 <a href="index.html" class="active">Home</a>
+                <a href="#features">Features</a>
+                <a href="#how-to-join">Join</a>
                 <a href="rules.html">Rules</a>
                 <a href="changelog.html">Changelog</a>
                 <a href="admin.html" id="nav-admin-link" style="display:none;">Admin Panel</a>
             </div>
-            <button class="nav-toggle" aria-label="Menu">☰</button>
+
+            <div class="nav-actions">
+                <a class="nav-discord" href="https://discord.gg/Z3HkAgtzfa" target="_blank" rel="noopener">Discord Server</a>
+                <div class="user-menu" id="userMenu">
+                    <button class="user-button discord-login" id="userButton" type="button" data-auth="false" onclick="window.location.href='/auth/discord'">Log in</button> <!-- for whoever edits this, put ur discord bot link thing here and it will auto connect it youll just need to change this for the link :) -->
+                    <div class="user-dropdown" id="userDropdown">
+                        <button id="logoutAction" type="button">Log out</button>
+                    </div>
+                </div>
+                <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">☰</button>
+            </div>
         </div>
     </nav>
 
-    <header class="hero">
-        <div class="hero-card hero-float">
-        <div class="wrap">
-            <div class="eyebrow" id="heroEyebrow">Java &amp; Bedrock · 1.21.11</div>
-            <h1 class="title">
-                <span class="line"><span id="heroLine1">A slower kind of</span></span>
-                <span class="line"><span><em id="heroLine2">survival.</em></span></span>
-            </h1>
-            <p class="subtitle" id="heroSubtitle">Blossom SMP is a chill, community-built survival world — no pay-to-win, no crates, just a calm cherry-blossom map and a friendly playerbase.</p>
-            <div class="hero-pill-row">
-                <span class="hero-pill">Java + Bedrock</span>
-                <span class="hero-pill">No Pay-to-Win</span>
-                <span class="hero-pill">Land Claims</span>
-                <span class="hero-pill">Friendly Community</span>
-            </div>
+    <main>
+        <header class="hero">
+            <div class="wrap hero-grid">
+                <section class="hero-copy" aria-labelledby="hero-title">
+                    <div class="eyebrow" id="heroEyebrow">Java &amp; Bedrock · 1.21.11</div>
+                    <h1 class="title" id="hero-title">
+                        A peaceful SMP with a<br />
+                        <em>cherry blossom soul.</em>
+                    </h1>
+                    <p class="subtitle" id="heroSubtitle">Blossom SMP is a calm survival server made for building, exploring and hanging out. No crates, no paid advantages, no messy systems - just a friendly world with useful quality-of-life features.</p>
 
-            <div class="ip-cluster">
-                <div class="ip-box" id="java-box">
-                    <div>
-                        <div class="label">Java Edition</div>
-                        <div class="value">108.181.119.197:50002</div>
+                    <div class="hero-actions">
+                        <button class="btn primary" onclick="copyIP('108.181.119.197:50002', 'java-box')">Copy Java IP</button>
+                        <a class="btn secondary" href="https://discord.gg/Z3HkAgtzfa" target="_blank" rel="noopener">Join Discord</a>
                     </div>
-                    <button onclick="copyIP('108.181.119.197:50002', 'java-box')">Copy</button>
+
+                    <div class="trust-row" aria-label="Server highlights">
+                        <span>Cross-play</span>
+                        <span>No Pay-to-Win</span>
+                        <span>Land Claims</span>
+                        <span>Friendly Community</span>
+                    </div>
+                </section>
+
+                <aside class="join-card" aria-label="Server connection details">
+                    <div class="join-card-top">
+                        <span class="live-dot"></span>
+                        <span>Ready to join</span>
+                    </div>
+                    <h2>Server IP</h2>
+                    <p>Pick your edition and copy the details below.</p>
+
+                    <div class="ip-cluster">
+                        <div class="ip-box" id="java-box">
+                            <div>
+                                <div class="label">Java Edition</div>
+                                <div class="value">108.181.119.197:50002</div>
+                            </div>
+                            <button onclick="copyIP('108.181.119.197:50002', 'java-box')">Copy</button>
+                        </div>
+                        <div class="ip-box" id="bedrock-box">
+                            <div>
+                                <div class="label">Bedrock Edition</div>
+                                <div class="value">108.181.119.197</div>
+                                <div class="small-value">Port 50018</div>
+                            </div>
+                            <button onclick="copyIP('108.181.119.197', 'bedrock-box')">Copy</button>
+                        </div>
+                    </div>
+
+                    <div class="mini-note">Tip: Bedrock players enter the IP and port separately.</div>
+                </aside>
+            </div>
+        </header>
+
+        <section class="about split-section" id="about">
+            <div class="wrap split-grid">
+                <div>
+                    <div class="section-kicker">About Blossom</div>
+                    <h2>A survival world that feels relaxed, not rushed.</h2>
                 </div>
-                <div class="ip-box" id="bedrock-box">
-                    <div>
-                        <div class="label">Bedrock Edition</div>
-                        <div class="value">108.181.119.197 · Port 50018</div>
-                    </div>
-                    <button onclick="copyIP('108.181.119.197', 'bedrock-box')">Copy</button>
+                <div class="about-copy">
+                    <p id="aboutP1">Blossom SMP is built for players who want a simple, friendly Minecraft survival experience without pay-to-win features or overcomplicated menus.</p>
+                    <p id="aboutP2">You can build at your own pace, claim your land, travel with Waystones, chat with nearby players using proximity voice, and enjoy a server that keeps survival feeling like survival.</p>
                 </div>
             </div>
-            <div class="hero-actions">
-                <button class="btn-outline" onclick="copyIP('108.181.119.197:50002', 'java-box')">Copy Java IP</button>
-                <button class="btn-outline" onclick="copyIP('108.181.119.197', 'bedrock-box')">Copy Bedrock IP</button>
-                <a class="discord-btn" href="https://discord.gg/Z3HkAgtzfa" target="_blank" rel="noopener">Join Discord →</a>
-            </div>
-            <div class="preview-strip">
-                <article class="preview-card">
-                    <div class="preview-pill">Spawn Plaza</div>
-                    <h4>Cherry Blossom Grounds</h4>
-                    <p>Relaxed spawn area with shops, meetups, and a calm aesthetic.</p>
-                </article>
-                <article class="preview-card">
-                    <div class="preview-pill">Sky Gardens</div>
-                    <h4>Floating Base District</h4>
-                    <p>Player-built sky islands and serene rooftop farms.</p>
-                </article>
-                <article class="preview-card">
-                    <div class="preview-pill">Mystic Mines</div>
-                    <h4>Deep Cavern Resource Hub</h4>
-                    <p>Shared mining corridors keep resources fair and easy to find.</p>
-                </article>
-                <article class="preview-card">
-                    <div class="preview-pill">Community Farm</div>
-                    <h4>Fields &amp; Shared Builds</h4>
-                    <p>Co-op farms and build collabs make Blossom feel alive.</p>
-                </article>
-            </div>
-        </div>
-        </div>
-    </header>
+        </section>
 
-    <section class="about" id="about">
-        <div class="wrap">
-            <p id="aboutP1">Blossom SMP is a chill Minecraft survival server built for players who want a relaxed, community-focused experience without pay-to-win systems or overcomplicated mechanics. Set in a calm, cherry-blossom-inspired world, the server is designed around <strong>simple survival gameplay</strong> enhanced with quality-of-life features like Waystones, proximity voice chat, and land claims to keep things fair and fun.</p>
-            <p id="aboutP2">Whether you're building, exploring, or just hanging out with friends, Blossom SMP focuses on creativity, community, and a laid-back atmosphere where everyone can play at their own pace. No crates, no unfair advantages — just pure survival with a friendly playerbase.</p>
-        </div>
-    </section>
+        <section id="features">
+            <div class="wrap">
+                <div class="section-head">
+                    <div class="section-kicker">Features</div>
+                    <h2>Everything you need, nothing unfair.</h2>
+                    <p>Blossom adds useful systems that make survival smoother, while keeping the main game fair for everyone.</p>
+                </div>
 
-    <section id="features">
-        <div class="wrap">
-            <div class="section-head">
-                <h2>What's on the server</h2>
-                <p>Just enough quality-of-life to keep survival fair, never enough to break it.</p>
+                <div class="features-grid">
+                    <article class="feature"><div class="glyph">🧭</div><h3>Waystones</h3><p>Fast travel between your bases without breaking immersion or grinding rails.</p></article>
+                    <article class="feature"><div class="glyph">🎙️</div><h3>Proximity Voice Chat</h3><p>Talk to nearby players naturally - no need to set up a separate call.</p></article>
+                    <article class="feature"><div class="glyph">🛡️</div><h3>Land Claims</h3><p>Protect your builds from griefing while keeping the world open and shared.</p></article>
+                    <article class="feature"><div class="glyph">🌸</div><h3>No Pay-to-Win</h3><p>No crates, no purchasable advantages. Everyone plays on the same footing.</p></article>
+                    <article class="feature"><div class="glyph">⚖️</div><h3>Vanilla-Friendly</h3><p>Survival stays simple and recognizable - additions support the game, not replace it.</p></article>
+                    <article class="feature"><div class="glyph">🔗</div><h3>Crossplatform</h3><p>Cross-play supported, so it doesn't matter which edition you're on.</p></article>
+                </div>
             </div>
-            <div class="features-grid">
-                <div class="feature"><div class="glyph"></div><h3>Waystones</h3><p>Fast travel between your bases without breaking immersion or grinding rails.</p></div>
-                <div class="feature"><div class="glyph"></div><h3>Proximity Voice Chat</h3><p>Talk to nearby players naturally — no need to set up a separate call.</p></div>
-                <div class="feature"><div class="glyph"></div><h3>Land Claims</h3><p>Protect your builds from griefing while keeping the world open and shared.</p></div>
-                <div class="feature"><div class="glyph"></div><h3>No Pay-to-Win</h3><p>No crates, no purchasable advantages. Everyone plays on the same footing.</p></div>
-                <div class="feature"><div class="glyph"></div><h3>Vanilla-Friendly</h3><p>Survival stays simple and recognizable — additions support the game, not replace it.</p></div>
-                <div class="feature"><div class="glyph"></div><h3>Java + Bedrock</h3><p>Cross-play supported, so it doesn't matter which edition you're on.</p></div>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <section id="status">
-        <div class="wrap">
-            <div class="section-head">
-                <h2 id="statusTitle">Server Status</h2>
-                <p id="statusSubtitle">Live data pulled directly from the server — always up to date.</p>
+        <section class="showcase">
+            <div class="wrap">
+                <div class="section-head">
+                    <div class="section-kicker">World</div>
+                    <h2>Built for builders, explorers and chill players.</h2>
+                </div>
+                <div class="preview-strip">
+                    <article class="preview-card"><div class="preview-pill">Spawn</div><h4>Cherry Blossom Grounds</h4><p>Relaxed spawn area with shops, meetups, and a calm aesthetic.</p></article>
+                    <article class="preview-card"><div class="preview-pill">Homes</div><h4>Floating Base District</h4><p>Player-built sky islands and serene rooftop farms.</p></article>
+                    <article class="preview-card"><div class="preview-pill">Travel</div><h4>Deep Cavern Resource Hub</h4><p>Shared mining corridors keep resources fair and easy to find.</p></article>
+                    <article class="preview-card"><div class="preview-pill">Community</div><h4>Fields & Shared Builds</h4><p>Co-op farms and build collabs make Blossom feel alive.</p></article>
+                </div>
             </div>
-            <div class="status-card" id="status-card">
-                <div class="status-row">
-                    <div class="status-dot">
-                        <span class="dot checking" id="statusDot"></span>
-                        <span class="status-text" id="statusText">Checking...</span>
+        </section>
+
+        <section id="status">
+            <div class="wrap status-layout">
+                <div class="section-head left">
+                    <div class="section-kicker">Live Status</div>
+                    <h2 id="statusTitle">Check before you join.</h2>
+                    <p id="statusSubtitle">The status card can pull live server data and show players when the server is online.</p>
+                </div>
+
+                <div class="status-card" id="status-card">
+                    <div class="status-row">
+                        <div class="status-dot">
+                            <span class="dot checking" id="statusDot"></span>
+                            <span class="status-text" id="statusText">Checking...</span>
+                        </div>
+                        <div class="status-badge checking" id="statusBadge">
+                            <span id="statusBadgeText">Checking server...</span>
+                        </div>
                     </div>
-                    <div class="status-badge checking" id="statusBadge">
-                        <span class="status-badge-icon">🌸</span>
-                        <span id="statusBadgeText">Checking the breeze...</span>
+                    <div class="motd" id="motdDisplay">Fetching server info...</div>
+                    <button class="status-refresh" onclick="fetchServerStatus()">⟳ Refresh</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="how-to-join" class="join-steps-section">
+            <div class="wrap">
+                <div class="section-head">
+                    <div class="section-kicker">Join in minutes</div>
+                    <h2>How to play Blossom SMP</h2>
+                </div>
+                <div class="steps-grid">
+                    <article class="step-card"><span>01</span><h3>Join the Discord</h3><p>Get updates, support and announcements before you log in.</p></article>
+                    <article class="step-card"><span>02</span><h3>Add the server</h3><p>Use the Java IP or Bedrock IP and port shown on this page.</p></article>
+                    <article class="step-card"><span>03</span><h3>Read the rules</h3><p>Keep the server relaxed by respecting builds, players and claims.</p></article>
+                    <article class="step-card"><span>04</span><h3>Start surviving</h3><p>Find land, claim your base, build something nice and settle in.</p></article>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta" id="join">
+            <div class="wrap">
+                <div class="cta-card">
+                    <h2 id="ctaTitle">Come hang out on Blossom.</h2>
+                    <p id="ctaText">Join the Discord for updates, support, rules and community announcements.</p>
+                    <div class="cta-actions">
+                        <a class="btn primary" href="https://discord.gg/Z3HkAgtzfa" target="_blank" rel="noopener" id="ctaButton">Join Discord</a>
+                        <button class="btn secondary" onclick="copyIP('108.181.119.197:50002', 'java-box')">Copy Java IP</button>
                     </div>
                 </div>
-                <div class="motd" id="motdDisplay">Fetching server info...</div>
-                <button class="status-refresh" onclick="fetchServerStatus()">⟳ Refresh</button>
             </div>
-            <div class="stats-bar">
-                <div class="stat-item"><div class="num">24/7</div><div class="desc">Uptime</div></div>
-                <div class="stat-item"><div class="num">1.21</div><div class="desc">Version</div></div>
-                <div class="stat-item"><div class="num">⚡</div><div class="desc">Crossplay</div></div>
-            </div>
-        </div>
-    </section>
-
-    <section class="cta" id="join">
-        <div class="wrap">
-            <h2 id="ctaTitle">Come hang out</h2>
-            <p id="ctaText">Join the Discord for updates, support, and to meet the community before you log on.</p>
-            <a class="discord-btn" href="https://discord.gg/Z3HkAgtzfa" target="_blank" rel="noopener" id="ctaButton">Join the Discord →</a>
-        </div>
-    </section>
+        </section>
+    </main>
 
     <footer>
-        <div>Blossom SMP — Java 108.181.119.197:50002 · Bedrock 108.181.119.197:50018 • Built by Blossom Devs • v1.0</div>
+        <div>Blossom SMP - Java 108.181.119.197:50002 · Bedrock 108.181.119.197:50018</div>
         <div class="footer-links">
             <a href="rules.html">Rules</a>
             <a href="changelog.html">Changelog</a>
-            <a href="https://discord.gg/Z3HkAgtzfa" target="_blank">Discord</a>
-            <a href="admin.html">Staff Login</a>
+            <a href="https://discord.gg/Z3HkAgtzfa" target="_blank" rel="noopener">Discord</a>
         </div>
     </footer>
 
-    <script src="assets/js/main.js"></script>
     <script>
-        applyContentOverrides();
+const navToggle = document.getElementById('navToggle') || document.querySelector('.nav-toggle');
+const navLinks = document.getElementById('navLinks') || document.querySelector('nav .links');
+
+if (navToggle && navLinks) {
+    navToggle.addEventListener('click', () => {
+        const isOpen = navLinks.classList.toggle('open');
+        navToggle.setAttribute('aria-expanded', String(isOpen));
+    });
+}
+
+function copyIP(ip, boxId) {
+    navigator.clipboard?.writeText(ip).catch(() => {
+        const temp = document.createElement('textarea');
+        temp.value = ip;
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand('copy');
+        temp.remove();
+    });
+
+    const box = document.getElementById(boxId);
+    if (!box) return;
+    box.classList.add('copied');
+    const button = box.querySelector('button');
+    const oldText = button ? button.textContent : '';
+    if (button) button.textContent = 'Copied';
+    setTimeout(() => {
+        box.classList.remove('copied');
+        if (button) button.textContent = oldText || 'Copy';
+    }, 1400);
+}
+
+window.copyIP = copyIP;
+
+const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('section').forEach(section => revealObserver.observe(section));
+
+const progress = document.getElementById('scroll-progress');
+window.addEventListener('scroll', () => {
+    if (!progress) return;
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    const percent = max > 0 ? (window.scrollY / max) * 100 : 0;
+    progress.style.width = `${percent}%`;
+});
+
+function createPetals() {
+    const holder = document.getElementById('petals');
+    if (!holder || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    for (let i = 0; i < 18; i++) {
+        const petal = document.createElement('span');
+        petal.className = 'petal';
+        petal.style.left = `${Math.random() * 100}%`;
+        petal.style.animationDuration = `${12 + Math.random() * 14}s`;
+        petal.style.animationDelay = `${Math.random() * -18}s`;
+        petal.style.opacity = `${0.18 + Math.random() * 0.45}`;
+        petal.style.transform = `scale(${0.7 + Math.random() * 0.9})`;
+        holder.appendChild(petal);
+    }
+}
+createPetals();
+
+async function fetchServerStatus() {
+    const dot = document.getElementById('statusDot');
+    const text = document.getElementById('statusText');
+    const badge = document.getElementById('statusBadge');
+    const badgeText = document.getElementById('statusBadgeText');
+    const motd = document.getElementById('motdDisplay');
+
+    const setState = (state, message, badgeMessage, motdMessage) => {
+        if (dot) dot.className = `dot ${state}`;
+        if (text) text.textContent = message;
+        if (badge) badge.className = `status-badge ${state}`;
+        if (badgeText) badgeText.textContent = badgeMessage;
+        if (motd) motd.textContent = motdMessage;
+    };
+
+    setState('checking', 'Checking...', 'Checking server...', 'Fetching server info...');
+
+    try {
+        const response = await fetch('https://api.mcsrvstat.us/3/108.181.119.197:50002', { cache: 'no-store' });
+        const data = await response.json();
+        if (data.online) {
+            const players = data.players ? `${data.players.online}/${data.players.max} players` : 'Online';
+            const version = data.version ? ` · ${data.version}` : '';
+            const cleanMotd = Array.isArray(data.motd?.clean) ? data.motd.clean.join(' ') : 'Blossom SMP is online.';
+            setState('online', 'Server online', players, `${cleanMotd}${version}`);
+        } else {
+            setState('offline', 'Server offline', 'Offline right now', 'The server is not responding at the moment.');
+        }
+    } catch (error) {
+        setState('offline', 'Status unavailable', 'Could not check', 'Could not reach the status API.');
+    }
+}
+
+window.fetchServerStatus = fetchServerStatus;
+fetchServerStatus();
+
+function applyContentOverrides() {}
+window.applyContentOverrides = window.applyContentOverrides || applyContentOverrides;
+
+    </script>
+    <script>
+        if (typeof applyContentOverrides === 'function') applyContentOverrides();
     </script>
 </body>
-</html>opl
+</html>

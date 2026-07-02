@@ -26,18 +26,27 @@ export async function onRequest(context) {
     const fallbackMatch = cookie.match(/(?:^|; )blossom_session=([^;]+)/);
 
     let authorized = false;
-    if (match && env.SESSIONS && typeof env.SESSIONS.get === 'function') {
+    const allowedUserId = env.DISCORD_ALLOWED_USER_ID || env.DISCORD_ALLOWED_USER;
+  if (match && env.SESSIONS && typeof env.SESSIONS.get === 'function') {
       try {
         const raw = await env.SESSIONS.get(`sess:${match[1]}`);
         if (raw) {
           const obj = JSON.parse(raw);
-          if (Number(obj.expiresAt || 0) > Date.now()) authorized = true;
+          if (Number(obj.expiresAt || 0) > Date.now()) {
+            if (!allowedUserId || String(obj.id) === String(allowedUserId)) {
+              authorized = true;
+            }
+          }
         }
       } catch (e) { authorized = false; }
     } else if (fallbackMatch) {
       try {
         const raw = JSON.parse(decodeURIComponent(fallbackMatch[1]));
-        if (Number(raw.expiresAt || 0) > Date.now()) authorized = true;
+        if (Number(raw.expiresAt || 0) > Date.now()) {
+          if (!allowedUserId || String(raw.id) === String(allowedUserId)) {
+            authorized = true;
+          }
+        }
       } catch (e) { authorized = false; }
     }
 

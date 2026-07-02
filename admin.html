@@ -76,10 +76,31 @@
     <div id="ambient"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
     <div id="petals"></div>
 
-    <nav>
-        <div class="wrap">
-            <div class="brand"><span class="dot"></span> Blossom SMP <span class="team-badge" style="margin-left:6px;">Staff Panel</span> <span style="color:var(--ink-dim);font-size:.75rem;font-family:'Inter',sans-serif;">/ admin</span></div>
-            <div class="links"><a href="index.html">← Back to site</a></div>
+    <nav class="site-nav">
+        <div class="wrap nav-wrap">
+            <a class="brand user-brand" href="index.html" aria-label="Blossom SMP Home">
+                <span>Blossom SMP</span>
+            </a>
+
+            <div class="links" id="navLinks">
+                <a href="index.html">Home</a>
+                <a href="#features">Features</a>
+                <a href="#how-to-join">Join</a>
+                <a href="rules.html">Rules</a>
+                <a href="changelog.html">Changelog</a>
+                <a href="admin.html" id="nav-admin-link" style="display:none;">Admin Panel</a>
+            </div>
+
+            <div class="nav-actions">
+                <a class="nav-discord" href="https://discord.gg/Z3HkAgtzfa" target="_blank" rel="noopener">Discord Server</a>
+                <div class="user-menu" id="userMenu">
+                    <button class="user-button discord-login" id="userButton" type="button" data-auth="false" onclick="window.location.href='/auth/discord'">Log in</button>
+                    <div class="user-dropdown" id="userDropdown">
+                        <button id="logoutAction" type="button">Log out</button>
+                    </div>
+                </div>
+                <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">☰</button>
+            </div>
         </div>
     </nav>
 
@@ -173,7 +194,12 @@
     </div>
 
     <footer>
-        <div>Blossom SMP — Admin Panel</div>
+        <div>Blossom SMP - Java 108.181.119.197:50002 · Bedrock 108.181.119.197:50018</div>
+        <div class="footer-links">
+            <a href="rules.html">Rules</a>
+            <a href="changelog.html">Changelog</a>
+            <a href="https://discord.gg/Z3HkAgtzfa" target="_blank" rel="noopener">Discord</a>
+        </div>
     </footer>
 
     <script src="assets/js/main.js"></script>
@@ -268,9 +294,9 @@
             if (err) err.textContent = '';
         }
 
-        function showAdmin() {
+        async function showAdmin() {
             if (!enforceAdminHost()) return;
-            if (!isSessionValid() && !isDiscordSessionActive()) {
+            if (!isSessionValid() && !(await isDiscordSessionActive())) {
                 logout();
                 return;
             }
@@ -462,10 +488,11 @@
             if (sessionStorage.getItem(SESSION_KEY) === '1') {
                 setSession();
             }
-            isDiscordSessionActive().then(active => {
+            (async () => {
+                const active = await isDiscordSessionActive();
                 if (active) setSession();
-                showAdmin();
-            });
+                await showAdmin();
+            })();
         });
     </script>
 </body>

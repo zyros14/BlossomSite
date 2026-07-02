@@ -8,7 +8,9 @@ export async function onRequest(context) {
   if (sessionCookies.length > 0) {
     sessionCookies.forEach((cookie) => {
       const name = cookie.split('=')[0];
-      headers.append('Set-Cookie', `${name}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0; HttpOnly; Secure; SameSite=Strict`);
+      const sameSite = name === 'blossom_discord_public' ? 'Lax' : 'Strict';
+      const httpOnly = name === 'blossom_discord_public' ? '' : '; HttpOnly';
+      headers.append('Set-Cookie', `${name}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0; Secure; SameSite=${sameSite}${httpOnly}`);
     });
   }
 

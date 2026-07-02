@@ -98,11 +98,15 @@ export async function onRequest(context) {
   }
 
   const expiresAt = Date.now() + 1000 * 60 * 60 * 8;
+  const avatarUrl = userData.avatar
+    ? `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png?size=64`
+    : `https://cdn.discordapp.com/embed/avatars/${Number(userData.discriminator || '0') % 5}.png`;
 
   const sessionObj = {
     id: userData.id,
     username: userData.username,
     globalName: userData.global_name || userData.username,
+    avatarUrl,
     expiresAt
   };
 
@@ -127,7 +131,7 @@ export async function onRequest(context) {
   }
 
   // Public (non-HttpOnly) cookie contains minimal, non-sensitive info for client-side UI
-  const publicObj = { expiresAt, username: userData.username };
+  const publicObj = { expiresAt, username: userData.username, avatarUrl };
   const publicCookie = `blossom_discord_public=${encodeURIComponent(JSON.stringify(publicObj))}; Path=/; Secure; SameSite=Lax; Max-Age=28800`;
 
   const setCookies = [sessionCookie, publicCookie];

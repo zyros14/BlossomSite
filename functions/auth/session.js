@@ -13,7 +13,7 @@ export async function onRequest(context) {
       if (Number(obj.expiresAt || 0) <= Date.now()) {
         return new Response(JSON.stringify({ authorized: false }), { status: 200, headers: { 'content-type': 'application/json' } });
       }
-      return new Response(JSON.stringify({ authorized: true, user: { id: obj.id, username: obj.username } }), { status: 200, headers: { 'content-type': 'application/json' } });
+      return new Response(JSON.stringify({ authorized: true, user: { id: obj.id, username: obj.username, avatarUrl: obj.avatarUrl || null } }), { status: 200, headers: { 'content-type': 'application/json' } });
     } catch (e) {
       return new Response(JSON.stringify({ authorized: false }), { status: 200, headers: { 'content-type': 'application/json' } });
     }
@@ -26,7 +26,7 @@ export async function onRequest(context) {
       if (Number(obj.expiresAt || 0) <= Date.now()) {
         return new Response(JSON.stringify({ authorized: false }), { status: 200, headers: { 'content-type': 'application/json' } });
       }
-      return new Response(JSON.stringify({ authorized: true, user: { id: obj.id, username: obj.username } }), { status: 200, headers: { 'content-type': 'application/json' } });
+      return new Response(JSON.stringify({ authorized: true, user: { id: obj.id, username: obj.username, avatarUrl: obj.avatarUrl || null } }), { status: 200, headers: { 'content-type': 'application/json' } });
     } catch (e) {
       return new Response(JSON.stringify({ authorized: false }), { status: 200, headers: { 'content-type': 'application/json' } });
     }
